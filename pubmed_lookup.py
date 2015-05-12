@@ -32,6 +32,23 @@ class PubMedLookup(metaclass=abc.ABCMeta):
         record = Entrez.read(handle)
         return record
 
+    @staticmethod
+    def get_abstract(pmid):
+        """Get abstract from PubMed ID"""
+        url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/' \
+              'efetch.fcgi?db=pubmed&rettype=abstract&id={}'.format(pmid)
+
+        try:
+            response = urlopen(url)
+        except:
+            abstract = ''
+        else:
+            xml = response.read().decode()
+            abstract_pattern = r'<AbstractText>(?P<abstract>.+)</AbstractText>'
+            abstract = re.search(abstract_pattern, xml).group('abstract')
+
+        return abstract
+
 
 class PubMedLookupPMID(PubMedLookup):
     """
@@ -41,6 +58,8 @@ class PubMedLookupPMID(PubMedLookup):
     def __init__(self, pmid, user_email):
         super().__init__(pmid, user_email)
         self.record = self.get_pubmed_record(pmid)[0]
+        if self.record['HasAbstract'] == 1:
+            self.abstract = self.get_abstract(pmid)
 
 
 class PubMedLookupURL(PubMedLookup):
@@ -52,6 +71,9 @@ class PubMedLookupURL(PubMedLookup):
         super().__init__(pubmed_url, user_email)
         pmid = self.parse_pubmed_url(pubmed_url)
         self.record = self.get_pubmed_record(pmid)[0]
+        if self.record['HasAbstract'] == 1:
+            self.abstract = self.get_abstract(pmid)
+
 
 if __name__ == '__main__':
     # NCBI will contact user by email if excessive queries are detected
@@ -75,5 +97,5 @@ if __name__ == '__main__':
     authors = ", ".join(pub2.record['AuthorList'])
     pub_date = pub2.record['PubDate']
     journal = pub2.record['Source']
-    print("TITLE: {}\nAUTHORS: {}\nJOURNAL: {}\nPUBDATE: {}"
-        .format(title, authors, journal, pub_date))
+    print("TITLE: {}\nAUTHORS: {}\nJOURNAL: {}\nPUBDATE: {}\nABSTRACT: {}"
+        .format(title, authors, journal, pub_date, pub2.abstract))
