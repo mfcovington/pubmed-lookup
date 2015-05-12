@@ -17,6 +17,11 @@ class PubMedLookup(metaclass=abc.ABCMeta):
     def __init__(self, query, user_email):
         Entrez.email = user_email
 
+    def pubmed_query(self, pmid):
+        self.record = self.get_pubmed_record(pmid)[0]
+        if self.record['HasAbstract'] == 1:
+            self.abstract = self.get_abstract(pmid)
+
     @staticmethod
     def parse_pubmed_url(pubmed_url):
         """Get PubMed ID (pmid) from PubMed URL."""
@@ -57,9 +62,7 @@ class PubMedLookupPMID(PubMedLookup):
     """
     def __init__(self, pmid, user_email):
         super().__init__(pmid, user_email)
-        self.record = self.get_pubmed_record(pmid)[0]
-        if self.record['HasAbstract'] == 1:
-            self.abstract = self.get_abstract(pmid)
+        self.pubmed_query(pmid)
 
 
 class PubMedLookupURL(PubMedLookup):
@@ -70,9 +73,7 @@ class PubMedLookupURL(PubMedLookup):
     def __init__(self, pubmed_url, user_email):
         super().__init__(pubmed_url, user_email)
         pmid = self.parse_pubmed_url(pubmed_url)
-        self.record = self.get_pubmed_record(pmid)[0]
-        if self.record['HasAbstract'] == 1:
-            self.abstract = self.get_abstract(pmid)
+        self.pubmed_query(pmid)
 
 
 if __name__ == '__main__':
