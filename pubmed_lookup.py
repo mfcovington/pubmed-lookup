@@ -52,3 +52,28 @@ class PubMedLookupURL(PubMedLookup):
         super().__init__(pubmed_url, user_email)
         pmid = self.parse_pubmed_url(pubmed_url)
         self.record = self.get_pubmed_record(pmid)[0]
+
+if __name__ == '__main__':
+    # NCBI will contact user by email if excessive queries are detected
+    email = ''
+
+    # Example of PubMed URL query
+    url = 'http://www.ncbi.nlm.nih.gov/pubmed/22331878'
+    pub1 = PubMedLookupURL(url, email)
+
+    # Example of PubMed ID query
+    pmid = '11402162'
+    pub2 = PubMedLookupPMID(pmid, email)
+
+    # Demo contents of entire record
+    import pprint
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(pub1.record)
+
+    # Demo extraction of record's contents
+    title = pub2.record['Title']
+    authors = ", ".join(pub2.record['AuthorList'])
+    pub_date = pub2.record['PubDate']
+    journal = pub2.record['Source']
+    print("TITLE: {}\nAUTHORS: {}\nJOURNAL: {}\nPUBDATE: {}"
+        .format(title, authors, journal, pub_date))
