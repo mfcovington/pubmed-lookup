@@ -10,6 +10,8 @@ class Publication(object):
     def __init__(self, pubmed_record):
         self.record = pubmed_record.record
         self.pmid = self.record['Id']
+        self.pubmed_url = 'http://www.ncbi.nlm.nih.gov/pubmed/{}' \
+                          .format(self.pmid)
         self.title = self.record['Title']
         self.authors = ", ".join(self.record['AuthorList'])
         self.journal = self.record['Source']
