@@ -10,13 +10,14 @@ from Bio import Entrez
 class Publication(object):
     def __init__(self, pubmed_record):
         self.record = pubmed_record.record
+        self.pmid = self.record['Id']
         self.title = self.record['Title']
         self.authors = ", ".join(self.record['AuthorList'])
         self.journal = self.record['Source']
-        self.abstract = pubmed_record.abstract
         self.pub_year = re.match(r'^(?P<year>\d{4})(?:\s.+)?',
                                  self.record['PubDate']).group('year')
         self.set_article_url()
+        self.set_abstract()
 
     def authors_et_al(self, max_authors):
         author_list = self.record['AuthorList']
@@ -39,6 +40,26 @@ class Publication(object):
         }
         return "{authors} ({year}). {title} {journal} {volume}({issue}): {pages}." \
             .format(**citation_data)
+
+    def set_abstract(self):
+        """If record has an abstract, get it with PubMed ID"""
+        if self.record['HasAbstract'] == 1:
+            url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/' \
+                  'efetch.fcgi?db=pubmed&rettype=abstract&id={}' \
+                  .format(self.pmid)
+
+            try:
+                response = urlopen(url)
+            except:
+                abstract = ''
+            else:
+                xml = response.read().decode()
+                abstract_pattern = r'<AbstractText[^>]*>(.+)</AbstractText>'
+                abstract_matches = re.findall(abstract_pattern, xml)
+
+            self.abstract =  "\n\n".join(abstract_matches)
+        else:
+            self.abstract = ''
 
     def set_article_url(self):
         if 'DOI' in self.record:
@@ -67,12 +88,6 @@ class PubMedLookup(metaclass=abc.ABCMeta):
     def pubmed_query(self, pmid):
         self.record = self.get_pubmed_record(pmid)[0]
 
-        if self.record['HasAbstract'] == 1:
-            self.abstract = self.get_abstract(pmid)
-        else:
-            self.abstract = ''
-
-
     @staticmethod
     def parse_pubmed_url(pubmed_url):
         """Get PubMed ID (pmid) from PubMed URL."""
@@ -87,23 +102,6 @@ class PubMedLookup(metaclass=abc.ABCMeta):
         handle = Entrez.esummary(db="pubmed", id=pmid)
         record = Entrez.read(handle)
         return record
-
-    @staticmethod
-    def get_abstract(pmid):
-        """Get abstract from PubMed ID"""
-        url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/' \
-              'efetch.fcgi?db=pubmed&rettype=abstract&id={}'.format(pmid)
-
-        try:
-            response = urlopen(url)
-        except:
-            abstract = ''
-        else:
-            xml = response.read().decode()
-            abstract_pattern = r'<AbstractText[^>]*>(.+)</AbstractText>'
-            abstract_matches = re.findall(abstract_pattern, xml)
-
-        return "\n\n".join(abstract_matches)
 
 
 class PubMedLookupPMID(PubMedLookup):
