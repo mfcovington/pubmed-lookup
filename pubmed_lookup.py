@@ -19,10 +19,26 @@ class PubMedLookup(metaclass=abc.ABCMeta):
 
     def pubmed_query(self, pmid):
         self.record = self.get_pubmed_record(pmid)[0]
+
+        if 'DOI' in self.record:
+            self.get_article_url()
+        else:
+            self.url = ''
+
         if self.record['HasAbstract'] == 1:
             self.abstract = self.get_abstract(pmid)
         else:
             self.abstract = ''
+
+    def get_article_url(self):
+        doi_url = "/".join(['http://dx.doi.org', self.record['DOI']])
+
+        try:
+            response = urlopen(doi_url)
+        except:
+            self.url = ''
+        else:
+            self.url = response.geturl()
 
     @staticmethod
     def parse_pubmed_url(pubmed_url):
