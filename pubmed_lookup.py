@@ -14,9 +14,9 @@ class Publication(object):
         self.authors = ", ".join(self.record['AuthorList'])
         self.journal = self.record['Source']
         self.abstract = pubmed_record.abstract
-        self.url = pubmed_record.url
         self.pub_year = re.match(r'^(?P<year>\d{4})(?:\s.+)?',
                                  self.record['PubDate']).group('year')
+        self.set_article_url()
 
     def authors_et_al(self, max_authors):
         author_list = self.record['AuthorList']
@@ -40,6 +40,19 @@ class Publication(object):
         return "{authors} ({year}). {title} {journal} {volume}({issue}): {pages}." \
             .format(**citation_data)
 
+    def set_article_url(self):
+        if 'DOI' in self.record:
+            doi_url = "/".join(['http://dx.doi.org', self.record['DOI']])
+
+            try:
+                response = urlopen(doi_url)
+            except:
+                self.url = ''
+            else:
+                self.url = response.geturl()
+        else:
+            self.url = ''
+
 
 class PubMedLookup(metaclass=abc.ABCMeta):
     """
@@ -54,25 +67,11 @@ class PubMedLookup(metaclass=abc.ABCMeta):
     def pubmed_query(self, pmid):
         self.record = self.get_pubmed_record(pmid)[0]
 
-        if 'DOI' in self.record:
-            self.get_article_url()
-        else:
-            self.url = ''
-
         if self.record['HasAbstract'] == 1:
             self.abstract = self.get_abstract(pmid)
         else:
             self.abstract = ''
 
-    def get_article_url(self):
-        doi_url = "/".join(['http://dx.doi.org', self.record['DOI']])
-
-        try:
-            response = urlopen(doi_url)
-        except:
-            self.url = ''
-        else:
-            self.url = response.geturl()
 
     @staticmethod
     def parse_pubmed_url(pubmed_url):
