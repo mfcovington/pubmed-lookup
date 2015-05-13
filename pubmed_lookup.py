@@ -67,10 +67,10 @@ class PubMedLookup(metaclass=abc.ABCMeta):
             abstract = ''
         else:
             xml = response.read().decode()
-            abstract_pattern = r'<AbstractText>(?P<abstract>.+)</AbstractText>'
-            abstract = re.search(abstract_pattern, xml).group('abstract')
+            abstract_pattern = r'<AbstractText[^>]*>(.+)</AbstractText>'
+            abstract_matches = re.findall(abstract_pattern, xml)
 
-        return abstract
+        return "\n\n".join(abstract_matches)
 
 
 class PubMedLookupPMID(PubMedLookup):
