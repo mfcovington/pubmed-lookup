@@ -7,7 +7,15 @@ from Bio import Entrez
 
 
 class Publication(object):
+    """
+    Use a PubMedLookup record to make a Publication object with info about
+    a scientific publication.
+    """
     def __init__(self, pubmed_record):
+        """
+        Upon init: set Publication attributes (record, pmid, pubmed_url,
+        title, authors, journal, pub_year, url, and abstract)
+        """
         self.record = pubmed_record.record
         self.pmid = self.record['Id']
         self.pubmed_url = 'http://www.ncbi.nlm.nih.gov/pubmed/{}' \
@@ -21,6 +29,9 @@ class Publication(object):
         self.set_abstract()
 
     def authors_et_al(self, max_authors=5):
+        """
+        Return string with a truncated author list followed by 'et al.'
+        """
         author_list = self.record['AuthorList']
         if len(author_list) <= max_authors:
             authors_et_al = self.authors
@@ -30,6 +41,10 @@ class Publication(object):
         return authors_et_al
 
     def cite(self, max_authors=5):
+        """
+        Return string with a citation for the record, formatted as:
+        '{authors} ({year}). {title} {journal} {volume}({issue}): {pages}.'
+        """
         citation_data = {
             'title': self.title,
             'authors': self.authors_et_al(max_authors),
@@ -63,6 +78,9 @@ class Publication(object):
             self.abstract = ''
 
     def set_article_url(self):
+        """
+        If record has a DOI, set article URL based on where the DOI points.
+        """
         if 'DOI' in self.record:
             doi_url = "/".join(['http://dx.doi.org', self.record['DOI']])
 
@@ -79,10 +97,14 @@ class Publication(object):
 class PubMedLookup(object):
     """
     Retrieve a PubMed record using its PubMed ID or PubMed URL.
-    (e.g., '22331878' OR 'http://www.ncbi.nlm.nih.gov/pubmed/22331878')
+    (e.g., '22331878' or 'http://www.ncbi.nlm.nih.gov/pubmed/22331878')
     """
 
     def __init__(self, query, user_email):
+        """
+        Upon init: set email as required by API, determine whether query
+        is PubMed ID or PubMed URL and retrieve PubMed record accordingly.
+        """
         Entrez.email = user_email
 
         pmid_pattern = r'^\d+$'
