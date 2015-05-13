@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 from urllib.request import urlopen
 
 from Bio import Entrez
+import xmltodict
 
 
 class Publication(object):
@@ -73,6 +74,44 @@ class Publication(object):
 
         return citation
 
+    @staticmethod
+    def parse_abstract(xml):
+        abstract_paragraphs = []
+        xml_dict = xmltodict.parse(xml)
+        abstract_xml = xml_dict['PubmedArticleSet']['PubmedArticle'] \
+            ['MedlineCitation']['Article']['Abstract']['AbstractText']
+
+        if isinstance(abstract_xml, str):
+            abstract_paragraphs.append(abstract_xml)
+
+        elif isinstance(abstract_xml, dict):
+            abstract_text = abstract_xml['#text']
+            try:
+                abstract_label = abstract_xml['@Label']
+                abstract_paragraphs.append("{}: {}"
+                    .format(abstract_label, abstract_text))
+            except:
+                abstract_paragraphs.append(abstract_text)
+
+        elif isinstance(abstract_xml, list):
+            for abstract_section in abstract_xml:
+                try:
+                    abstract_text = abstract_section['#text']
+                except:
+                    abstract_text = abstract_section
+
+                try:
+                    abstract_label = abstract_section['@Label']
+                    abstract_paragraphs.append("{}: {}"
+                        .format(abstract_label, abstract_text))
+                except:
+                    abstract_paragraphs.append(abstract_text)
+
+        else:
+            raise RuntimeError("Error parsing abstract.")
+
+        return "\n\n".join(abstract_paragraphs)
+
     def set_abstract(self):
         """If record has an abstract, get it with PubMed ID"""
         if self.record['HasAbstract'] == 1:
@@ -83,13 +122,11 @@ class Publication(object):
             try:
                 response = urlopen(url)
             except:
-                abstract = ''
+                self.abstract = ''
             else:
                 xml = response.read().decode()
-                abstract_pattern = r'<AbstractText[^>]*>(.+)</AbstractText>'
-                abstract_matches = re.findall(abstract_pattern, xml)
+                self.abstract = self.parse_abstract(xml)
 
-            self.abstract =  "\n\n".join(abstract_matches)
         else:
             self.abstract = ''
 
