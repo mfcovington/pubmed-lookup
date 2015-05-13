@@ -7,6 +7,40 @@ from urllib.request import urlopen
 from Bio import Entrez
 
 
+class Publication(object):
+    def __init__(self, pubmed_record):
+        self.record = pubmed_record.record
+        self.title = self.record['Title']
+        self.authors = ", ".join(self.record['AuthorList'])
+        self.journal = self.record['Source']
+        self.abstract = pubmed_record.abstract
+        self.url = pubmed_record.url
+        self.pub_year = re.match(r'^(?P<year>\d{4})(?:\s.+)?',
+                                 self.record['PubDate']).group('year')
+
+    def authors_et_al(self, max_authors):
+        author_list = self.record['AuthorList']
+        if len(author_list) <= max_authors:
+            authors_et_al = self.authors
+        else:
+            authors_et_al = ", ".join(
+                self.record['AuthorList'][:max_authors]) + ", et al."
+        return authors_et_al
+
+    def cite(self, max_authors=5):
+        citation_data = {
+            'title': self.title,
+            'authors': self.authors_et_al(max_authors),
+            'year': self.pub_year,
+            'journal': self.journal,
+            'volume': self.record['Volume'],
+            'issue': self.record['Issue'],
+            'pages': self.record['Pages'],
+        }
+        return "{authors} ({year}). {title} {journal} {volume}({issue}): {pages}." \
+            .format(**citation_data)
+
+
 class PubMedLookup(metaclass=abc.ABCMeta):
     """
     This is an abstract base class for PubMed lookups.
