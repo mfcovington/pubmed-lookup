@@ -25,6 +25,9 @@ class Publication(object):
         self.journal = self.record['Source']
         self.pub_year = re.match(r'^(?P<year>\d{4})(?:\s.+)?',
                                  self.record['PubDate']).group('year')
+        self.volume = self.record['Volume']
+        self.issue = self.record['Issue']
+        self.pages = self.record['Pages']
         self.set_article_url()
         self.set_abstract()
 
@@ -50,12 +53,25 @@ class Publication(object):
             'authors': self.authors_et_al(max_authors),
             'year': self.pub_year,
             'journal': self.journal,
-            'volume': self.record['Volume'],
-            'issue': self.record['Issue'],
-            'pages': self.record['Pages'],
+            'volume': self.volume,
+            'issue': self.issue,
+            'pages': self.pages,
         }
-        return "{authors} ({year}). {title} {journal} {volume}({issue}): {pages}." \
-            .format(**citation_data)
+        citation = "{authors} ({year}). {title} {journal}".format(**citation_data)
+        if self.volume and self.issue and self.pages:
+            citation += " {volume}({issue}): {pages}.".format(**citation_data)
+        elif self.volume and self.issue:
+            citation += " {volume}({issue}).".format(**citation_data)
+        elif self.volume and self.pages:
+            citation += " {volume}: {pages}.".format(**citation_data)
+        elif self.volume:
+            citation += " {volume}.".format(**citation_data)
+        elif self.pages:
+            citation += " {pages}.".format(**citation_data)
+        else:
+            citation += "."
+
+        return citation
 
     def set_abstract(self):
         """If record has an abstract, get it with PubMed ID"""
