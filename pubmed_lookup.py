@@ -1,4 +1,3 @@
-import abc
 import re
 import sys
 from urllib.parse import urlparse
@@ -75,15 +74,25 @@ class Publication(object):
             self.url = ''
 
 
-class PubMedLookup(metaclass=abc.ABCMeta):
+class PubMedLookup(object):
     """
-    This is an abstract base class for PubMed lookups.
-    Don't use directly!
+    Retrieve a PubMed record using its PubMed ID or PubMed URL.
+    (e.g., '22331878' OR 'http://www.ncbi.nlm.nih.gov/pubmed/22331878')
     """
 
-    @abc.abstractmethod
     def __init__(self, query, user_email):
         Entrez.email = user_email
+
+        pmid_pattern = r'^\d+$'
+        pmurl_pattern = r'^https?://www\.ncbi\.nlm\.nih\.gov/pubmed/\d+$'
+        if re.match(pmid_pattern, query):
+            pmid = query
+        elif re.match(pmurl_pattern, query):
+            pmid = self.parse_pubmed_url(query)
+        else:
+            pass
+
+        self.record = self.get_pubmed_record(pmid)[0]
 
     @staticmethod
     def parse_pubmed_url(pubmed_url):
@@ -99,27 +108,6 @@ class PubMedLookup(metaclass=abc.ABCMeta):
         handle = Entrez.esummary(db="pubmed", id=pmid)
         record = Entrez.read(handle)
         return record
-
-
-class PubMedLookupPMID(PubMedLookup):
-    """
-    Retrieve a PubMed record using its PubMed ID.
-    (e.g., '22331878' of 'http://www.ncbi.nlm.nih.gov/pubmed/22331878')
-    """
-    def __init__(self, pmid, user_email):
-        super().__init__(pmid, user_email)
-        self.record = self.get_pubmed_record(pmid)[0]
-
-
-class PubMedLookupURL(PubMedLookup):
-    """
-    Retrieve a PubMed record using its PubMed URL.
-    (e.g., 'http://www.ncbi.nlm.nih.gov/pubmed/22331878')
-    """
-    def __init__(self, pubmed_url, user_email):
-        super().__init__(pubmed_url, user_email)
-        pmid = self.parse_pubmed_url(pubmed_url)
-        self.record = self.get_pubmed_record(pmid)[0]
 
 
 if __name__ == '__main__':
