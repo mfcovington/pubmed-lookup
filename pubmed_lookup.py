@@ -21,6 +21,8 @@ class PubMedLookup(metaclass=abc.ABCMeta):
         self.record = self.get_pubmed_record(pmid)[0]
         if self.record['HasAbstract'] == 1:
             self.abstract = self.get_abstract(pmid)
+        else:
+            self.abstract = ''
 
     @staticmethod
     def parse_pubmed_url(pubmed_url):
