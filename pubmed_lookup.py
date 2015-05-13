@@ -99,11 +99,11 @@ if __name__ == '__main__':
     email = ''
 
     # Example of PubMed URL query
-    url = 'http://www.ncbi.nlm.nih.gov/pubmed/22331878'
+    url = 'http://www.ncbi.nlm.nih.gov/pubmed/11402162'
     pub1 = PubMedLookupURL(url, email)
 
     # Example of PubMed ID query
-    pmid = '11402162'
+    pmid = '22331878'
     pub2 = PubMedLookupPMID(pmid, email)
 
     # Demo contents of entire record
@@ -116,5 +116,14 @@ if __name__ == '__main__':
     authors = ", ".join(pub2.record['AuthorList'])
     pub_date = pub2.record['PubDate']
     journal = pub2.record['Source']
-    print("TITLE: {}\nAUTHORS: {}\nJOURNAL: {}\nPUBDATE: {}\nABSTRACT: {}"
-        .format(title, authors, journal, pub_date, pub2.abstract))
+    print(
+        """
+        TITLE: {}
+        AUTHORS: {}
+        JOURNAL: {}
+        PUBDATE: {}
+        ABSTRACT: {}
+        URL: {}
+        """
+        .format(title, authors, journal, pub_date, pub2.abstract,
+            pub2.url))
