@@ -140,35 +140,35 @@ if __name__ == '__main__':
     # NCBI will contact user by email if excessive queries are detected
     email = ''
 
-    # Example of PubMed URL query
-    url = 'http://www.ncbi.nlm.nih.gov/pubmed/11402162'
-    pm1 = PubMedLookupURL(url, email)
-
-    # Example of PubMed ID query
-    pmid = '22331878'
-    pm2 = PubMedLookupPMID(pmid, email)
+    # Example of PubMedLookup
+    url = 'http://www.ncbi.nlm.nih.gov/pubmed/22331878'
+    lookup = PubMedLookup(url, email)
 
     # Demo contents of entire record
     import pprint
     pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(pm1.record)
+    pp.pprint(lookup.record)
 
-    # Demo extraction of record's contents
-    title = pm2.record['Title']
-    authors = ", ".join(pm2.record['AuthorList'])
-    pub_date = pm2.record['PubDate']
-    journal = pm2.record['Source']
+    # Example of Publication
+    publication = Publication(lookup)
     print(
         """
-        TITLE: {}
-        AUTHORS: {}
-        JOURNAL: {}
-        PUBDATE: {}
-        ABSTRACT: {}
-        URL: {}
+TITLE: {title}\n
+AUTHORS: {authors}\n
+JOURNAL: {journal}\n
+YEAR: {year}\n
+URL: {url}\n
+PUBMED: {pubmed}\n
+CITATION: {citation}\n
+ABSTRACT: {abstract}\n
         """
-        .format(title, authors, journal, pub_date, pm2.abstract,
-            pm2.url))
-
-    publication = Publication(pm1)
-    print(publication.cite())
+        .format(**{
+            'title': publication.title,
+            'authors': publication.authors,
+            'journal': publication.journal,
+            'year': publication.pub_year,
+            'url': publication.url,
+            'pubmed': publication.pubmed_url,
+            'citation': publication.cite(),
+            'abstract': publication.abstract,
+        }))
