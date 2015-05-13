@@ -114,7 +114,9 @@ class PubMedLookup(object):
         elif re.match(pmurl_pattern, query):
             pmid = self.parse_pubmed_url(query)
         else:
-            pass
+            raise RuntimeError(
+                "Query ({}) doesn't appear to be a PubMed ID or PubMed URL"
+                .format(query))
 
         self.record = self.get_pubmed_record(pmid)[0]
 
