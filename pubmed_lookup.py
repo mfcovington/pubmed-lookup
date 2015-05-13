@@ -134,22 +134,22 @@ if __name__ == '__main__':
 
     # Example of PubMed URL query
     url = 'http://www.ncbi.nlm.nih.gov/pubmed/11402162'
-    pub1 = PubMedLookupURL(url, email)
+    pm1 = PubMedLookupURL(url, email)
 
     # Example of PubMed ID query
     pmid = '22331878'
-    pub2 = PubMedLookupPMID(pmid, email)
+    pm2 = PubMedLookupPMID(pmid, email)
 
     # Demo contents of entire record
     import pprint
     pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(pub1.record)
+    pp.pprint(pm1.record)
 
     # Demo extraction of record's contents
-    title = pub2.record['Title']
-    authors = ", ".join(pub2.record['AuthorList'])
-    pub_date = pub2.record['PubDate']
-    journal = pub2.record['Source']
+    title = pm2.record['Title']
+    authors = ", ".join(pm2.record['AuthorList'])
+    pub_date = pm2.record['PubDate']
+    journal = pm2.record['Source']
     print(
         """
         TITLE: {}
@@ -159,5 +159,8 @@ if __name__ == '__main__':
         ABSTRACT: {}
         URL: {}
         """
-        .format(title, authors, journal, pub_date, pub2.abstract,
-            pub2.url))
+        .format(title, authors, journal, pub_date, pm2.abstract,
+            pm2.url))
+
+    publication = Publication(pm1)
+    print(publication.cite())
