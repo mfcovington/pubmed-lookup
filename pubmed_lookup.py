@@ -206,14 +206,14 @@ if __name__ == '__main__':
     publication = Publication(lookup)
     print(
         """
-TITLE: {title}\n
-AUTHORS: {authors}\n
-JOURNAL: {journal}\n
-YEAR: {year}\n
-URL: {url}\n
-PUBMED: {pubmed}\n
-CITATION: {citation}\n
-ABSTRACT: {abstract}\n
+TITLE:\n{title}\n
+AUTHORS:\n{authors}\n
+JOURNAL:\n{journal}\n
+YEAR:\n{year}\n
+URL:\n{url}\n
+PUBMED:\n{pubmed}\n
+CITATION:\n{citation}\n
+ABSTRACT:\n{abstract}\n
         """
         .format(**{
             'title': publication.title,
