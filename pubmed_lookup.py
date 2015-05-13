@@ -18,7 +18,7 @@ class Publication(object):
         self.set_article_url()
         self.set_abstract()
 
-    def authors_et_al(self, max_authors):
+    def authors_et_al(self, max_authors=5):
         author_list = self.record['AuthorList']
         if len(author_list) <= max_authors:
             authors_et_al = self.authors
