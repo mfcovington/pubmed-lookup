@@ -162,7 +162,7 @@ class PubMedLookup(object):
 
         pmid_pattern = r'^\d+$'
         pmurl_pattern = r'^https?://www\.ncbi\.nlm\.nih\.gov/pubmed/\d+$'
-        if re.match(pmid_pattern, query):
+        if re.match(pmid_pattern, str(query)):
             pmid = query
         elif re.match(pmurl_pattern, query):
             pmid = self.parse_pubmed_url(query)
