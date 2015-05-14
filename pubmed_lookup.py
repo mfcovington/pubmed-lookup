@@ -23,6 +23,8 @@ class Publication(object):
                           .format(self.pmid)
         self.title = self.record['Title']
         self.authors = ", ".join(self.record['AuthorList'])
+        self.first_author = self.record['AuthorList'][0]
+        self.last_author = self.record['AuthorList'][-1]
         self.journal = self.record['Source']
         self.pub_year = re.match(r'^(?P<year>\d{4})(?:\s.+)?',
                                  self.record['PubDate']).group('year')
