@@ -16,7 +16,8 @@ class Publication(object):
     def __init__(self, pubmed_record):
         """
         Upon init: set Publication attributes (record, pmid, pubmed_url,
-        title, authors, journal, pub_year, url, and abstract)
+        title, authors, first_author, last_author, journal, volume, issue,
+        pages, url, abstract, year, month, and day)
         """
         self.record = pubmed_record.record
         self.pmid = self.record['Id']
@@ -80,6 +81,9 @@ class Publication(object):
 
     @staticmethod
     def parse_abstract(xml_dict):
+        """
+        Parse PubMed XML dictionary to retrieve abstract.
+        """
         abstract_paragraphs = []
         abstract_xml = xml_dict['PubmedArticleSet']['PubmedArticle'] \
             ['MedlineCitation']['Article']['Abstract']['AbstractText']
@@ -118,6 +122,9 @@ class Publication(object):
         return "\n\n".join(abstract_paragraphs)
 
     def get_pubmed_xml(self):
+        """
+        Use a PubMed ID to retrieve PubMed metadata in XML form.
+        """
         url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/' \
               'efetch.fcgi?db=pubmed&rettype=abstract&id={}' \
               .format(self.pmid)
