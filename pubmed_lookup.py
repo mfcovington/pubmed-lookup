@@ -1,3 +1,4 @@
+import datetime
 import re
 import sys
 from urllib.parse import urlparse
@@ -26,13 +27,14 @@ class Publication(object):
         self.first_author = self.record['AuthorList'][0]
         self.last_author = self.record['AuthorList'][-1]
         self.journal = self.record['Source']
-        self.pub_year = re.match(r'^(?P<year>\d{4})(?:\s.+)?',
-                                 self.record['PubDate']).group('year')
         self.volume = self.record['Volume']
         self.issue = self.record['Issue']
         self.pages = self.record['Pages']
         self.set_article_url()
-        self.set_abstract()
+
+        xml_dict = self.get_pubmed_xml()
+        self.set_abstract(xml_dict)
+        self.set_pub_year_month_day(xml_dict)
 
     def authors_et_al(self, max_authors=5):
         """
@@ -54,7 +56,7 @@ class Publication(object):
         citation_data = {
             'title': self.title,
             'authors': self.authors_et_al(max_authors),
-            'year': self.pub_year,
+            'year': self.year,
             'journal': self.journal,
             'volume': self.volume,
             'issue': self.issue,
@@ -77,9 +79,8 @@ class Publication(object):
         return citation
 
     @staticmethod
-    def parse_abstract(xml):
+    def parse_abstract(xml_dict):
         abstract_paragraphs = []
-        xml_dict = xmltodict.parse(xml)
         abstract_xml = xml_dict['PubmedArticleSet']['PubmedArticle'] \
             ['MedlineCitation']['Article']['Abstract']['AbstractText']
 
@@ -114,21 +115,27 @@ class Publication(object):
 
         return "\n\n".join(abstract_paragraphs)
 
-    def set_abstract(self):
-        """If record has an abstract, get it with PubMed ID"""
-        if self.record['HasAbstract'] == 1:
-            url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/' \
-                  'efetch.fcgi?db=pubmed&rettype=abstract&id={}' \
-                  .format(self.pmid)
+    def get_pubmed_xml(self):
+        url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/' \
+              'efetch.fcgi?db=pubmed&rettype=abstract&id={}' \
+              .format(self.pmid)
 
-            try:
-                response = urlopen(url)
-            except:
-                self.abstract = ''
-            else:
-                xml = response.read().decode()
-                self.abstract = self.parse_abstract(xml)
+        try:
+            response = urlopen(url)
+        except:
+            xml_dict = ''
+        else:
+            xml = response.read().decode()
+            xml_dict = xmltodict.parse(xml)
 
+        return xml_dict
+
+    def set_abstract(self, xml_dict):
+        """
+        If record has an abstract, get it extract it from PubMed's XML data
+        """
+        if self.record['HasAbstract'] == 1 and xml_dict:
+                self.abstract = self.parse_abstract(xml_dict)
         else:
             self.abstract = ''
 
@@ -147,6 +154,37 @@ class Publication(object):
                 self.url = response.geturl()
         else:
             self.url = ''
+
+    def set_pub_year_month_day(self, xml_dict):
+        """
+        Set publication year, month, day from PubMed's XML data
+        """
+        try:
+            pubdate_xml = xml_dict['PubmedArticleSet']['PubmedArticle'] \
+                ['MedlineCitation']['Article']['Journal']['JournalIssue'] \
+                ['PubDate']
+        except:
+            year = ''
+            month = ''
+            day = ''
+        else:
+            try:
+                year = pubdate_xml['Year']
+            except:
+                year = ''
+
+            try:
+                month_short = pubdate_xml['Month']
+                month = datetime.datetime.strptime(month_short, "%b").month
+            except:
+                month = ''
+
+            try:
+                day = pubdate_xml['Day']
+            except:
+                day = ''
+
+        self.year, self.month, self.day = year, month, day
 
 
 class PubMedLookup(object):
