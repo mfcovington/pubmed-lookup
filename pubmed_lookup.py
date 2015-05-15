@@ -259,6 +259,8 @@ TITLE:\n{title}\n
 AUTHORS:\n{authors}\n
 JOURNAL:\n{journal}\n
 YEAR:\n{year}\n
+MONTH:\n{month}\n
+DAY:\n{day}\n
 URL:\n{url}\n
 PUBMED:\n{pubmed}\n
 CITATION:\n{citation}\n
@@ -268,9 +270,11 @@ ABSTRACT:\n{abstract}\n
             'title': publication.title,
             'authors': publication.authors,
             'journal': publication.journal,
-            'year': publication.pub_year,
+            'year': publication.year,
+            'month': publication.month,
+            'day': publication.day,
             'url': publication.url,
             'pubmed': publication.pubmed_url,
             'citation': publication.cite(),
-            'abstract': publication.abstract,
+            'abstract': repr(publication.abstract),
         }))
