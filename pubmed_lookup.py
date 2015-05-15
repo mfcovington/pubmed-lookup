@@ -91,10 +91,11 @@ class Publication(object):
             abstract_text = abstract_xml['#text']
             try:
                 abstract_label = abstract_xml['@Label']
-                abstract_paragraphs.append("{}: {}"
-                    .format(abstract_label, abstract_text))
             except:
                 abstract_paragraphs.append(abstract_text)
+            else:
+                abstract_paragraphs.append("{}: {}"
+                    .format(abstract_label, abstract_text))
 
         elif isinstance(abstract_xml, list):
             for abstract_section in abstract_xml:
@@ -105,10 +106,11 @@ class Publication(object):
 
                 try:
                     abstract_label = abstract_section['@Label']
-                    abstract_paragraphs.append("{}: {}"
-                        .format(abstract_label, abstract_text))
                 except:
                     abstract_paragraphs.append(abstract_text)
+                else:
+                    abstract_paragraphs.append("{}: {}"
+                        .format(abstract_label, abstract_text))
 
         else:
             raise RuntimeError("Error parsing abstract.")
