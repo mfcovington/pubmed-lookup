@@ -1,0 +1,5 @@
+Revision history for pubmed-lookup
+
+0.1.0 2015-05-22
+
+  - Lookup PubMed records and make Publication objects with info about a scientific publication
