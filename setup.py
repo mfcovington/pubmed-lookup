@@ -14,7 +14,7 @@ install_requires = [
 
 setup(
     name='pubmed-lookup',
-    version='0.0.0',
+    version='0.1.0',
     packages=['pubmed_lookup'],
     include_package_data=True,
     license='BSD License',
