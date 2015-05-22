@@ -15,6 +15,8 @@ PubMed Lookup is package to lookup PubMed records and make Publication objects w
 - Retrieve a PubMed record:
 
     ```python
+    from pubmed_lookup import PubMedLookup
+
     # NCBI will contact user by email if excessive queries are detected
     email = ''
     url = 'http://www.ncbi.nlm.nih.gov/pubmed/22331878'
@@ -24,6 +26,8 @@ PubMed Lookup is package to lookup PubMed records and make Publication objects w
 - Create a Publication object:
 
     ```python
+    from pubmed_lookup import Publication
+    
     publication = Publication(lookup)
     ```
 
