@@ -9,7 +9,7 @@ PubMed Lookup is package to lookup PubMed records and make Publication objects w
 - Install:
 
     ```sh
-    pip install pubmed-lookup-0.1.0.tar.gz
+    pip install https://github.com/mfcovington/pubmed-lookup/releases/download/0.1.0/pubmed-lookup-0.1.0.tar.gz
     ```
 
 - Retrieve a PubMed record:
