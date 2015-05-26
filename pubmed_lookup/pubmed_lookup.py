@@ -79,6 +79,20 @@ class Publication(object):
 
         return citation
 
+    def cite_mini(self):
+        """
+        Return string with a citation for the record, formatted as:
+        '{first_author} - {year} - {journal}'
+        """
+        citation_data = [self.first_author]
+
+        if len(self.record['AuthorList']) > 1:
+            citation_data.append(self.last_author)
+
+        citation_data.extend([self.year, self.journal])
+
+        return " - ".join(citation_data)
+
     @staticmethod
     def parse_abstract(xml_dict):
         """
@@ -264,6 +278,7 @@ DAY:\n{day}\n
 URL:\n{url}\n
 PUBMED:\n{pubmed}\n
 CITATION:\n{citation}\n
+MINICITATION:\n{mini_citation}\n
 ABSTRACT:\n{abstract}\n
         """
         .format(**{
@@ -276,5 +291,6 @@ ABSTRACT:\n{abstract}\n
             'url': publication.url,
             'pubmed': publication.pubmed_url,
             'citation': publication.cite(),
+            'mini_citation': publication.cite_mini(),
             'abstract': repr(publication.abstract),
         }))
