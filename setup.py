@@ -22,7 +22,7 @@ install_requires = [
 
 setup(
     name='pubmed-lookup',
-    version='0.1.1',
+    version='0.1.2',
     packages=['pubmed_lookup'],
     include_package_data=True,
     license='BSD License',
