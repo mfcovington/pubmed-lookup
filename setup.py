@@ -1,5 +1,10 @@
 import os
+import sys
 from setuptools import setup
+
+if sys.version_info < (3, 3):
+    print("Sorry, djangocms-lab-publications currently requires Python 3.3+.")
+    sys.exit(1)
 
 # From: https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/
 def read(*paths):
@@ -36,7 +41,6 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3 :: Only',
