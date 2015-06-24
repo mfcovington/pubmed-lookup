@@ -21,6 +21,7 @@ setup(
     packages=['pubmed_lookup'],
     include_package_data=True,
     license='BSD License',
+    keywords='citations lab literature pmid publications pubmed science',
     description='Lookup PubMed records and make Publication objects with info about a scientific publication',
     long_description=(read('README.rst') + '\n\n' +
                       read('CHANGELOG.rst')),
