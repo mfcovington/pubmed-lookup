@@ -11,7 +11,7 @@ class TestPublication(unittest.TestCase):
         email = ''
         cls.pmid = '22331878'
         lookup = PubMedLookup(cls.pmid, email)
-        cls.record = Publication(lookup)
+        cls.master_record = Publication(lookup)
 
         # Set frequently used expected results
         cls.authors = 'Goodspeed D, Chehab EW, Min-Venditti A, Braam J, ' \
@@ -34,6 +34,9 @@ class TestPublication(unittest.TestCase):
         }
         cls.base_citation = '{authors} ({year}). {title} {journal}'.format(
             **cls.citation_data)
+
+    def setUp(self):
+        self.record = copy.copy(self.master_record)
 
     def test_fields(self):
         self.assertEqual(self.record.pmid, self.pmid)
@@ -71,49 +74,42 @@ class TestPublication(unittest.TestCase):
                 **self.citation_data))
 
     def test_cite_without_pages(self):
-        record_copy = copy.copy(self.record)
-        record_copy.pages = ''
-        self.assertEqual(record_copy.cite(), '{} {volume}({issue}).'.format(
+        self.record.pages = ''
+        self.assertEqual(self.record.cite(), '{} {volume}({issue}).'.format(
             self.base_citation, **self.citation_data))
 
     def test_cite_without_issue(self):
-        record_copy = copy.copy(self.record)
-        record_copy.issue = ''
-        self.assertEqual(record_copy.cite(), '{} {volume}: {pages}.'.format(
+        self.record.issue = ''
+        self.assertEqual(self.record.cite(), '{} {volume}: {pages}.'.format(
             self.base_citation, **self.citation_data))
 
     def test_cite_without_issue_pages(self):
-        record_copy = copy.copy(self.record)
-        record_copy.issue = ''
-        record_copy.pages = ''
-        self.assertEqual(record_copy.cite(), '{} {volume}.'.format(
+        self.record.issue = ''
+        self.record.pages = ''
+        self.assertEqual(self.record.cite(), '{} {volume}.'.format(
             self.base_citation, **self.citation_data))
 
     def test_cite_without_issue_volume(self):
-        record_copy = copy.copy(self.record)
-        record_copy.issue = ''
-        record_copy.volume = ''
-        self.assertEqual(record_copy.cite(), '{} {pages}.'.format(
+        self.record.issue = ''
+        self.record.volume = ''
+        self.assertEqual(self.record.cite(), '{} {pages}.'.format(
             self.base_citation, **self.citation_data))
 
     def test_cite_without_issue_pages_volume(self):
-        record_copy = copy.copy(self.record)
-        record_copy.issue = ''
-        record_copy.pages = ''
-        record_copy.volume = ''
-        self.assertEqual(record_copy.cite(), '{}.'.format(self.base_citation))
+        self.record.issue = ''
+        self.record.pages = ''
+        self.record.volume = ''
+        self.assertEqual(self.record.cite(), '{}.'.format(self.base_citation))
 
     def test_missing_doi(self):
-        record_copy = copy.copy(self.record)
-        del record_copy.record['DOI']
-        record_copy.set_article_url()
-        self.assertEqual(record_copy.url, '')
+        del self.record.record['DOI']
+        self.record.set_article_url()
+        self.assertEqual(self.record.url, '')
 
     def test_invalid_doi(self):
-        record_copy = copy.copy(self.record)
-        record_copy.record.update({'DOI': 'not a valid DOI'})
-        record_copy.set_article_url()
-        self.assertEqual(record_copy.url, '')
+        self.record.record.update({'DOI': 'not a valid DOI'})
+        self.record.set_article_url()
+        self.assertEqual(self.record.url, '')
 
 
 class TestPubMedLookup(unittest.TestCase):
