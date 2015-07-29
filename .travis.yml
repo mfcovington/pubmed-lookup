@@ -1,0 +1,6 @@
+language: python
+python:
+  - "3.3"
+  - "3.4"
+install: pip install -e .
+script: python -m unittest -v pubmed_lookup/test_pubmed_lookup.py
