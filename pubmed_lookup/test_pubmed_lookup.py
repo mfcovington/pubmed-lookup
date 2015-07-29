@@ -42,8 +42,6 @@ class TestPublication(unittest.TestCase):
         self.assertEqual(self.record.pmid, self.pmid)
         self.assertEqual(self.record.pubmed_url,
             'http://www.ncbi.nlm.nih.gov/pubmed/22331878')
-        self.assertEqual(self.record.url,
-            'http://www.pnas.org/content/109/12/4674')
         self.assertEqual(self.record.title, self.title)
         self.assertEqual(self.record.authors, self.authors)
         self.assertEqual(self.record.first_author, 'Goodspeed D')
@@ -100,6 +98,10 @@ class TestPublication(unittest.TestCase):
         self.record.pages = ''
         self.record.volume = ''
         self.assertEqual(self.record.cite(), '{}.'.format(self.base_citation))
+
+    def test_doi(self):
+        self.assertEqual(self.record.url,
+            'http://www.pnas.org/content/109/12/4674')
 
     def test_missing_doi(self):
         del self.record.record['DOI']
