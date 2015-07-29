@@ -2,6 +2,17 @@
 pubmed-lookup
 *************
 
+
+.. image:: https://badge.fury.io/py/pubmed-lookup.svg
+    :target: http://badge.fury.io/py/pubmed-lookup
+
+.. image:: https://travis-ci.org/mfcovington/pubmed-lookup.svg?branch=master
+    :target: https://travis-ci.org/mfcovington/pubmed-lookup
+
+.. image:: https://coveralls.io/repos/mfcovington/pubmed-lookup/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/mfcovington/pubmed-lookup?branch=master
+
+
 ``pubmed-lookup`` is package to lookup PubMed records and make Publication objects with info about a scientific publication.
 
 Source code is available on GitHub at `mfcovington/pubmed-lookup <https://github.com/mfcovington/pubmed-lookup>`_.
