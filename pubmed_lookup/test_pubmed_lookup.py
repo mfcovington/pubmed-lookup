@@ -1,4 +1,5 @@
 import copy
+import os
 import unittest
 
 from pubmed_lookup import Publication, PubMedLookup
@@ -99,6 +100,8 @@ class TestPublication(unittest.TestCase):
         self.record.volume = ''
         self.assertEqual(self.record.cite(), '{}.'.format(self.base_citation))
 
+    @unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == 'true',
+        "Skipping this test on Travis CI.")
     def test_doi(self):
         self.assertEqual(self.record.url,
             'http://www.pnas.org/content/109/12/4674')
