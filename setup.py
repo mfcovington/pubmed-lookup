@@ -22,8 +22,9 @@ install_requires = [
 
 setup(
     name='pubmed-lookup',
-    version='0.1.2',
+    version='0.1.3',
     packages=['pubmed_lookup'],
+    test_suite = 'pubmed_lookup.test_pubmed_lookup',
     include_package_data=True,
     license='BSD License',
     keywords='citations lab literature pmid publications pubmed science',

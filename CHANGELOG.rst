@@ -1,6 +1,14 @@
 Revision History
 ================
 
+0.1.3 2015-07-29
+
+- Add tests for Publication and PubMedLookup
+- Configure Travis-CI
+- Configure Coveralls
+- Add PyPI, Travis-CI, and Coveralls badges to README
+
+
 0.1.2 2015-06-24
 
 - Prepare for distribution via PyPI
