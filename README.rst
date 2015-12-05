@@ -29,11 +29,11 @@ Installation
 
     pip install pubmed-lookup
 
-**GitHub**
+**GitHub (development branch)**
 
 .. code-block:: sh
 
-    pip install https://github.com/mfcovington/pubmed-lookup/releases/download/0.1.3/pubmed-lookup-0.1.3.tar.gz
+    pip install git+http://github.com/mfcovington/pubmed-lookup.git@develop
 
 
 Usage
