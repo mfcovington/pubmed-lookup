@@ -12,6 +12,9 @@ pubmed-lookup
 .. image:: https://coveralls.io/repos/mfcovington/pubmed-lookup/badge.svg?branch=master&service=github
     :target: https://coveralls.io/github/mfcovington/pubmed-lookup?branch=master
 
+.. image:: https://landscape.io/github/mfcovington/pubmed-lookup/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/mfcovington/pubmed-lookup/master
+   :alt: Code Health
 
 ``pubmed-lookup`` is package to lookup PubMed records and make Publication objects with info about a scientific publication.
 
