@@ -1,6 +1,7 @@
 import datetime
 import re
 import sys
+from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
@@ -20,17 +21,17 @@ class Publication(object):
         pages, url, abstract, year, month, and day)
         """
         self.record = pubmed_record.record
-        self.pmid = self.record['Id']
+        self.pmid = self.record.get('Id')
         self.pubmed_url = 'http://www.ncbi.nlm.nih.gov/pubmed/{}' \
                           .format(self.pmid)
-        self.title = self.record['Title']
-        self.authors = ", ".join(self.record['AuthorList'])
-        self.first_author = self.record['AuthorList'][0]
-        self.last_author = self.record['AuthorList'][-1]
-        self.journal = self.record['Source']
-        self.volume = self.record['Volume']
-        self.issue = self.record['Issue']
-        self.pages = self.record['Pages']
+        self.title = self.record.get('Title')
+        self.authors = ", ".join(self.record.get('AuthorList'))
+        self.first_author = self.record.get('AuthorList')[0]
+        self.last_author = self.record.get('AuthorList')[-1]
+        self.journal = self.record.get('Source')
+        self.volume = self.record.get('Volume')
+        self.issue = self.record.get('Issue')
+        self.pages = self.record.get('Pages')
         self.set_article_url()
 
         xml_dict = self.get_pubmed_xml()
@@ -41,12 +42,12 @@ class Publication(object):
         """
         Return string with a truncated author list followed by 'et al.'
         """
-        author_list = self.record['AuthorList']
+        author_list = self.record.get('AuthorList')
         if len(author_list) <= max_authors:
             authors_et_al = self.authors
         else:
             authors_et_al = ", ".join(
-                self.record['AuthorList'][:max_authors]) + ", et al."
+                self.record.get('AuthorList')[:max_authors]) + ", et al."
         return authors_et_al
 
     def cite(self, max_authors=5):
@@ -86,7 +87,7 @@ class Publication(object):
         """
         citation_data = [self.first_author]
 
-        if len(self.record['AuthorList']) > 1:
+        if len(self.record.get('AuthorList')) > 1:
             citation_data.append(self.last_author)
 
         citation_data.extend([self.year, self.journal])
@@ -109,7 +110,7 @@ class Publication(object):
             abstract_text = abstract_xml.get('#text')
             try:
                 abstract_label = abstract_xml['@Label']
-            except:
+            except KeyError:
                 abstract_paragraphs.append(abstract_text)
             else:
                 abstract_paragraphs.append("{}: {}"
@@ -119,12 +120,12 @@ class Publication(object):
             for abstract_section in abstract_xml:
                 try:
                     abstract_text = abstract_section['#text']
-                except:
+                except KeyError:
                     abstract_text = abstract_section
 
                 try:
                     abstract_label = abstract_section['@Label']
-                except:
+                except KeyError:
                     abstract_paragraphs.append(abstract_text)
                 else:
                     abstract_paragraphs.append("{}: {}"
@@ -145,7 +146,7 @@ class Publication(object):
 
         try:
             response = urlopen(url)
-        except:
+        except URLError:
             xml_dict = ''
         else:
             xml = response.read().decode()
@@ -157,7 +158,7 @@ class Publication(object):
         """
         If record has an abstract, get it extract it from PubMed's XML data
         """
-        if self.record['HasAbstract'] == 1 and xml_dict:
+        if self.record.get('HasAbstract') == 1 and xml_dict:
                 self.abstract = self.parse_abstract(xml_dict)
         else:
             self.abstract = ''
@@ -171,7 +172,7 @@ class Publication(object):
 
             try:
                 response = urlopen(doi_url)
-            except:
+            except URLError:
                 self.url = ''
             else:
                 self.url = response.geturl()
@@ -186,7 +187,7 @@ class Publication(object):
             pubdate_xml = xml_dict['PubmedArticleSet']['PubmedArticle'] \
                 ['MedlineCitation']['Article']['Journal']['JournalIssue'] \
                 ['PubDate']
-        except:
+        except KeyError:
             year = ''
             month = ''
             day = ''
@@ -197,7 +198,7 @@ class Publication(object):
 
             try:
                 month = datetime.datetime.strptime(month_short, "%b").month
-            except:
+            except ValueError:
                 month = ''
 
         self.year, self.month, self.day = year, month, day
