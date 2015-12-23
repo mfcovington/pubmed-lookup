@@ -1,5 +1,6 @@
 import datetime
 import re
+from functools import reduce
 from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import urlopen
@@ -99,13 +100,11 @@ class Publication(object):
         """
         Parse PubMed XML dictionary to retrieve abstract.
         """
-        abstract_paragraphs = []
+        key_path = ['PubmedArticleSet', 'PubmedArticle', 'MedlineCitation',
+                    'Article', 'Abstract', 'AbstractText']
+        abstract_xml = reduce(dict.get, key_path, xml_dict)
 
-        try:
-            abstract_xml = xml_dict['PubmedArticleSet']['PubmedArticle'] \
-                ['MedlineCitation']['Article']['Abstract']['AbstractText']
-        except KeyError:
-            abstract_xml = ''
+        abstract_paragraphs = []
 
         if isinstance(abstract_xml, str):
             abstract_paragraphs.append(abstract_xml)
@@ -187,15 +186,11 @@ class Publication(object):
         """
         Set publication year, month, day from PubMed's XML data
         """
-        try:
-            pubdate_xml = xml_dict['PubmedArticleSet']['PubmedArticle'] \
-                ['MedlineCitation']['Article']['Journal']['JournalIssue'] \
-                ['PubDate']
-        except KeyError:
-            year = ''
-            month = ''
-            day = ''
-        else:
+        key_path = ['PubmedArticleSet', 'PubmedArticle', 'MedlineCitation',
+                    'Article', 'Journal', 'JournalIssue', 'PubDate']
+        pubdate_xml = reduce(dict.get, key_path, xml_dict)
+
+        if isinstance(pubdate_xml, dict):
             year = pubdate_xml.get('Year')
             month_short = pubdate_xml.get('Month')
             day = pubdate_xml.get('Day')
@@ -204,6 +199,11 @@ class Publication(object):
                 month = datetime.datetime.strptime(month_short, "%b").month
             except ValueError:
                 month = ''
+
+        else:
+            year = ''
+            month = ''
+            day = ''
 
         self.year, self.month, self.day = year, month, day
 
