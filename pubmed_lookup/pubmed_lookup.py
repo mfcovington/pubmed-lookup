@@ -106,7 +106,7 @@ class Publication(object):
             abstract_paragraphs.append(abstract_xml)
 
         elif isinstance(abstract_xml, dict):
-            abstract_text = abstract_xml['#text']
+            abstract_text = abstract_xml.get('#text')
             try:
                 abstract_label = abstract_xml['@Label']
             except:
@@ -191,21 +191,14 @@ class Publication(object):
             month = ''
             day = ''
         else:
-            try:
-                year = pubdate_xml['Year']
-            except:
-                year = ''
+            year = pubdate_xml.get('Year')
+            month_short = pubdate_xml.get('Month')
+            day = pubdate_xml.get('Day')
 
             try:
-                month_short = pubdate_xml['Month']
                 month = datetime.datetime.strptime(month_short, "%b").month
             except:
                 month = ''
-
-            try:
-                day = pubdate_xml['Day']
-            except:
-                day = ''
 
         self.year, self.month, self.day = year, month, day
 
