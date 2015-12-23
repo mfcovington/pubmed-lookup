@@ -25,9 +25,10 @@ class Publication(object):
         self.pubmed_url = 'http://www.ncbi.nlm.nih.gov/pubmed/{}' \
                           .format(self.pmid)
         self.title = self.record.get('Title')
-        self.authors = ", ".join(self.record.get('AuthorList'))
-        self.first_author = self.record.get('AuthorList')[0]
-        self.last_author = self.record.get('AuthorList')[-1]
+        self._author_list = self.record.get('AuthorList')
+        self.authors = ", ".join(self._author_list)
+        self.first_author = self._author_list[0]
+        self.last_author = self._author_list[-1]
         self.journal = self.record.get('Source')
         self.volume = self.record.get('Volume')
         self.issue = self.record.get('Issue')
@@ -42,12 +43,12 @@ class Publication(object):
         """
         Return string with a truncated author list followed by 'et al.'
         """
-        author_list = self.record.get('AuthorList')
+        author_list = self._author_list
         if len(author_list) <= max_authors:
             authors_et_al = self.authors
         else:
             authors_et_al = ", ".join(
-                self.record.get('AuthorList')[:max_authors]) + ", et al."
+                self._author_list[:max_authors]) + ", et al."
         return authors_et_al
 
     def cite(self, max_authors=5):
@@ -87,7 +88,7 @@ class Publication(object):
         """
         citation_data = [self.first_author]
 
-        if len(self.record.get('AuthorList')) > 1:
+        if len(self._author_list) > 1:
             citation_data.append(self.last_author)
 
         citation_data.extend([self.year, self.journal])
