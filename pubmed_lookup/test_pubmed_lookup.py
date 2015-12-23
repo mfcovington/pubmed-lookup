@@ -41,7 +41,8 @@ class TestPublication(unittest.TestCase):
 
     def test_fields(self):
         self.assertEqual(self.record.pmid, self.pmid)
-        self.assertEqual(self.record.pubmed_url,
+        self.assertEqual(
+            self.record.pubmed_url,
             'http://www.ncbi.nlm.nih.gov/pubmed/22331878')
         self.assertEqual(self.record.title, self.title)
         self.assertEqual(self.record.authors, self.authors)
@@ -58,19 +59,21 @@ class TestPublication(unittest.TestCase):
 
     def test_authors_et_al(self):
         self.assertEqual(self.record.authors_et_al(), self.authors)
-        self.assertEqual(self.record.authors_et_al(max_authors=3),
+        self.assertEqual(
+            self.record.authors_et_al(max_authors=3),
             'Goodspeed D, Chehab EW, Min-Venditti A, et al.')
-        self.assertEqual(self.record.authors_et_al(max_authors=10),
-            self.authors)
+        self.assertEqual(
+            self.record.authors_et_al(max_authors=10), self.authors)
 
     def test_cite_mini(self):
-        self.assertEqual(self.record.cite_mini(),
+        self.assertEqual(
+            self.record.cite_mini(),
             'Goodspeed D - Covington MF - 2012 - Proc Natl Acad Sci U S A')
 
     def test_cite(self):
-        self.assertEqual(self.record.cite(),
-            '{} {volume}({issue}): {pages}.'.format(self.base_citation,
-                **self.citation_data))
+        self.assertEqual(
+            self.record.cite(), '{} {volume}({issue}): {pages}.'.format(
+                self.base_citation, **self.citation_data))
 
     def test_cite_without_pages(self):
         self.record.pages = ''
@@ -100,11 +103,12 @@ class TestPublication(unittest.TestCase):
         self.record.volume = ''
         self.assertEqual(self.record.cite(), '{}.'.format(self.base_citation))
 
-    @unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == 'true',
+    @unittest.skipIf(
+        "TRAVIS" in os.environ and os.environ["TRAVIS"] == 'true',
         "Skipping this test on Travis CI.")
     def test_doi(self):
-        self.assertEqual(self.record.url,
-            'http://www.pnas.org/content/109/12/4674')
+        self.assertEqual(
+            self.record.url, 'http://www.pnas.org/content/109/12/4674')
 
     def test_missing_doi(self):
         del self.record.record['DOI']
@@ -124,12 +128,13 @@ class TestPubMedLookup(unittest.TestCase):
         self.pmid = '22331878'
 
     def test_pmid_and_url_return_same_record(self):
-        self.assertEqual(PubMedLookup(self.pmid, self.email).record,
+        self.assertEqual(
+            PubMedLookup(self.pmid, self.email).record,
             PubMedLookup(self.pubmed_url, self.email).record)
 
     def test_parse_pubmed_url(self):
-        self.assertEqual(PubMedLookup.parse_pubmed_url(self.pubmed_url),
-            self.pmid)
+        self.assertEqual(
+            PubMedLookup.parse_pubmed_url(self.pubmed_url), self.pmid)
 
     def test_invalid_query(self):
         with self.assertRaises(RuntimeError):

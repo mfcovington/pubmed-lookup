@@ -14,6 +14,7 @@ class Publication(object):
     Use a PubMedLookup record to make a Publication object with info about
     a scientific publication.
     """
+
     def __init__(self, pubmed_record):
         """
         Upon init: set Publication attributes (record, pmid, pubmed_url,
@@ -65,7 +66,9 @@ class Publication(object):
             'issue': self.issue,
             'pages': self.pages,
         }
-        citation = "{authors} ({year}). {title} {journal}".format(**citation_data)
+        citation = "{authors} ({year}). {title} {journal}".format(
+            **citation_data)
+
         if self.volume and self.issue and self.pages:
             citation += " {volume}({issue}): {pages}.".format(**citation_data)
         elif self.volume and self.issue:
@@ -116,8 +119,8 @@ class Publication(object):
             except KeyError:
                 abstract_paragraphs.append(abstract_text)
             else:
-                abstract_paragraphs.append("{}: {}"
-                    .format(abstract_label, abstract_text))
+                abstract_paragraphs.append(
+                    "{}: {}".format(abstract_label, abstract_text))
 
         elif isinstance(abstract_xml, list):
             for abstract_section in abstract_xml:
@@ -131,8 +134,8 @@ class Publication(object):
                 except KeyError:
                     abstract_paragraphs.append(abstract_text)
                 else:
-                    abstract_paragraphs.append("{}: {}"
-                        .format(abstract_label, abstract_text))
+                    abstract_paragraphs.append(
+                        "{}: {}".format(abstract_label, abstract_text))
 
         else:
             raise RuntimeError("Error parsing abstract.")
@@ -162,7 +165,7 @@ class Publication(object):
         If record has an abstract, get it extract it from PubMed's XML data
         """
         if self.record.get('HasAbstract') == 1 and xml_dict:
-                self.abstract = self.parse_abstract(xml_dict)
+            self.abstract = self.parse_abstract(xml_dict)
         else:
             self.abstract = ''
 
