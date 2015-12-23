@@ -101,8 +101,12 @@ class Publication(object):
         Parse PubMed XML dictionary to retrieve abstract.
         """
         abstract_paragraphs = []
-        abstract_xml = xml_dict['PubmedArticleSet']['PubmedArticle'] \
-            ['MedlineCitation']['Article']['Abstract']['AbstractText']
+
+        try:
+            abstract_xml = xml_dict['PubmedArticleSet']['PubmedArticle'] \
+                ['MedlineCitation']['Article']['Abstract']['AbstractText']
+        except KeyError:
+            abstract_xml = ''
 
         if isinstance(abstract_xml, str):
             abstract_paragraphs.append(abstract_xml)
