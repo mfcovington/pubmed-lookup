@@ -1,6 +1,7 @@
 import datetime
 import re
-import sys
+from functools import reduce
+from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
@@ -13,6 +14,7 @@ class Publication(object):
     Use a PubMedLookup record to make a Publication object with info about
     a scientific publication.
     """
+
     def __init__(self, pubmed_record):
         """
         Upon init: set Publication attributes (record, pmid, pubmed_url,
@@ -20,17 +22,18 @@ class Publication(object):
         pages, url, abstract, year, month, and day)
         """
         self.record = pubmed_record.record
-        self.pmid = self.record['Id']
+        self.pmid = self.record.get('Id')
         self.pubmed_url = 'http://www.ncbi.nlm.nih.gov/pubmed/{}' \
                           .format(self.pmid)
-        self.title = self.record['Title']
-        self.authors = ", ".join(self.record['AuthorList'])
-        self.first_author = self.record['AuthorList'][0]
-        self.last_author = self.record['AuthorList'][-1]
-        self.journal = self.record['Source']
-        self.volume = self.record['Volume']
-        self.issue = self.record['Issue']
-        self.pages = self.record['Pages']
+        self.title = self.record.get('Title')
+        self._author_list = self.record.get('AuthorList')
+        self.authors = ", ".join(self._author_list)
+        self.first_author = self._author_list[0]
+        self.last_author = self._author_list[-1]
+        self.journal = self.record.get('Source')
+        self.volume = self.record.get('Volume')
+        self.issue = self.record.get('Issue')
+        self.pages = self.record.get('Pages')
         self.set_article_url()
 
         xml_dict = self.get_pubmed_xml()
@@ -41,12 +44,12 @@ class Publication(object):
         """
         Return string with a truncated author list followed by 'et al.'
         """
-        author_list = self.record['AuthorList']
+        author_list = self._author_list
         if len(author_list) <= max_authors:
             authors_et_al = self.authors
         else:
             authors_et_al = ", ".join(
-                self.record['AuthorList'][:max_authors]) + ", et al."
+                self._author_list[:max_authors]) + ", et al."
         return authors_et_al
 
     def cite(self, max_authors=5):
@@ -63,7 +66,9 @@ class Publication(object):
             'issue': self.issue,
             'pages': self.pages,
         }
-        citation = "{authors} ({year}). {title} {journal}".format(**citation_data)
+        citation = "{authors} ({year}). {title} {journal}".format(
+            **citation_data)
+
         if self.volume and self.issue and self.pages:
             citation += " {volume}({issue}): {pages}.".format(**citation_data)
         elif self.volume and self.issue:
@@ -86,7 +91,7 @@ class Publication(object):
         """
         citation_data = [self.first_author]
 
-        if len(self.record['AuthorList']) > 1:
+        if len(self._author_list) > 1:
             citation_data.append(self.last_author)
 
         citation_data.extend([self.year, self.journal])
@@ -98,37 +103,39 @@ class Publication(object):
         """
         Parse PubMed XML dictionary to retrieve abstract.
         """
+        key_path = ['PubmedArticleSet', 'PubmedArticle', 'MedlineCitation',
+                    'Article', 'Abstract', 'AbstractText']
+        abstract_xml = reduce(dict.get, key_path, xml_dict)
+
         abstract_paragraphs = []
-        abstract_xml = xml_dict['PubmedArticleSet']['PubmedArticle'] \
-            ['MedlineCitation']['Article']['Abstract']['AbstractText']
 
         if isinstance(abstract_xml, str):
             abstract_paragraphs.append(abstract_xml)
 
         elif isinstance(abstract_xml, dict):
-            abstract_text = abstract_xml['#text']
+            abstract_text = abstract_xml.get('#text')
             try:
                 abstract_label = abstract_xml['@Label']
-            except:
+            except KeyError:
                 abstract_paragraphs.append(abstract_text)
             else:
-                abstract_paragraphs.append("{}: {}"
-                    .format(abstract_label, abstract_text))
+                abstract_paragraphs.append(
+                    "{}: {}".format(abstract_label, abstract_text))
 
         elif isinstance(abstract_xml, list):
             for abstract_section in abstract_xml:
                 try:
                     abstract_text = abstract_section['#text']
-                except:
+                except KeyError:
                     abstract_text = abstract_section
 
                 try:
                     abstract_label = abstract_section['@Label']
-                except:
+                except KeyError:
                     abstract_paragraphs.append(abstract_text)
                 else:
-                    abstract_paragraphs.append("{}: {}"
-                        .format(abstract_label, abstract_text))
+                    abstract_paragraphs.append(
+                        "{}: {}".format(abstract_label, abstract_text))
 
         else:
             raise RuntimeError("Error parsing abstract.")
@@ -145,7 +152,7 @@ class Publication(object):
 
         try:
             response = urlopen(url)
-        except:
+        except URLError:
             xml_dict = ''
         else:
             xml = response.read().decode()
@@ -157,8 +164,8 @@ class Publication(object):
         """
         If record has an abstract, get it extract it from PubMed's XML data
         """
-        if self.record['HasAbstract'] == 1 and xml_dict:
-                self.abstract = self.parse_abstract(xml_dict)
+        if self.record.get('HasAbstract') == 1 and xml_dict:
+            self.abstract = self.parse_abstract(xml_dict)
         else:
             self.abstract = ''
 
@@ -171,7 +178,7 @@ class Publication(object):
 
             try:
                 response = urlopen(doi_url)
-            except:
+            except URLError:
                 self.url = ''
             else:
                 self.url = response.geturl()
@@ -182,32 +189,25 @@ class Publication(object):
         """
         Set publication year, month, day from PubMed's XML data
         """
-        try:
-            pubdate_xml = xml_dict['PubmedArticleSet']['PubmedArticle'] \
-                ['MedlineCitation']['Article']['Journal']['JournalIssue'] \
-                ['PubDate']
-        except:
-            year = ''
-            month = ''
-            day = ''
+        key_path = ['PubmedArticleSet', 'PubmedArticle', 'MedlineCitation',
+                    'Article', 'Journal', 'JournalIssue', 'PubDate']
+        pubdate_xml = reduce(dict.get, key_path, xml_dict)
+
+        if isinstance(pubdate_xml, dict):
+            self.year = pubdate_xml.get('Year')
+            month_short = pubdate_xml.get('Month')
+            self.day = pubdate_xml.get('Day')
+
+            try:
+                self.month = datetime.datetime.strptime(
+                    month_short, "%b").month
+            except ValueError:
+                self.month = ''
+
         else:
-            try:
-                year = pubdate_xml['Year']
-            except:
-                year = ''
-
-            try:
-                month_short = pubdate_xml['Month']
-                month = datetime.datetime.strptime(month_short, "%b").month
-            except:
-                month = ''
-
-            try:
-                day = pubdate_xml['Day']
-            except:
-                day = ''
-
-        self.year, self.month, self.day = year, month, day
+            self.year = ''
+            self.month = ''
+            self.day = ''
 
 
 class PubMedLookup(object):
@@ -240,7 +240,7 @@ class PubMedLookup(object):
     def parse_pubmed_url(pubmed_url):
         """Get PubMed ID (pmid) from PubMed URL."""
         parse_result = urlparse(pubmed_url)
-        pattern = re.compile('^/pubmed/(\d+)$')
+        pattern = re.compile(r'^/pubmed/(\d+)$')
         pmid = pattern.match(parse_result.path).group(1)
         return pmid
 
