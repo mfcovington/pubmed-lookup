@@ -19,7 +19,7 @@ pubmed-lookup
    :target: https://landscape.io/github/mfcovington/pubmed-lookup/master
    :alt: Code Health
 
-``pubmed-lookup`` is package to lookup PubMed records and make Publication objects with info about a scientific publication.
+``pubmed-lookup`` is a Python package to lookup PubMed records and make Publication objects with info about a scientific publication.
 
 Source code is available on GitHub at `mfcovington/pubmed-lookup <https://github.com/mfcovington/pubmed-lookup>`_.
 
