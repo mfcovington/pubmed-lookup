@@ -1,6 +1,14 @@
 Revision History
 ================
 
+0.1.4 2015-12-24
+
+- Resolve PEP8 errors
+- Refactor code to be cleaner
+- Configure Landscape and add code health badge
+- Convert Github installation instructions to install from develop branch
+
+
 0.1.3 2015-07-29
 
 - Add tests for Publication and PubMedLookup
