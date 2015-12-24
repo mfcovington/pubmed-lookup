@@ -5,12 +5,15 @@ pubmed-lookup
 
 .. image:: https://badge.fury.io/py/pubmed-lookup.svg
     :target: http://badge.fury.io/py/pubmed-lookup
+    :alt: PyPI Version
 
 .. image:: https://travis-ci.org/mfcovington/pubmed-lookup.svg?branch=master
     :target: https://travis-ci.org/mfcovington/pubmed-lookup
+    :alt: Build Status
 
 .. image:: https://coveralls.io/repos/mfcovington/pubmed-lookup/badge.svg?branch=master&service=github
     :target: https://coveralls.io/github/mfcovington/pubmed-lookup?branch=master
+    :alt: Test Coverage
 
 .. image:: https://landscape.io/github/mfcovington/pubmed-lookup/master/landscape.svg?style=flat
    :target: https://landscape.io/github/mfcovington/pubmed-lookup/master
