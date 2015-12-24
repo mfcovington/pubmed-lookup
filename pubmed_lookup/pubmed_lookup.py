@@ -194,21 +194,20 @@ class Publication(object):
         pubdate_xml = reduce(dict.get, key_path, xml_dict)
 
         if isinstance(pubdate_xml, dict):
-            year = pubdate_xml.get('Year')
+            self.year = pubdate_xml.get('Year')
             month_short = pubdate_xml.get('Month')
-            day = pubdate_xml.get('Day')
+            self.day = pubdate_xml.get('Day')
 
             try:
-                month = datetime.datetime.strptime(month_short, "%b").month
+                self.month = datetime.datetime.strptime(
+                    month_short, "%b").month
             except ValueError:
-                month = ''
+                self.month = ''
 
         else:
-            year = ''
-            month = ''
-            day = ''
-
-        self.year, self.month, self.day = year, month, day
+            self.year = ''
+            self.month = ''
+            self.day = ''
 
 
 class PubMedLookup(object):
