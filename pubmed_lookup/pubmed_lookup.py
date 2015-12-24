@@ -241,7 +241,7 @@ class PubMedLookup(object):
     def parse_pubmed_url(pubmed_url):
         """Get PubMed ID (pmid) from PubMed URL."""
         parse_result = urlparse(pubmed_url)
-        pattern = re.compile('^/pubmed/(\d+)$')
+        pattern = re.compile(r'^/pubmed/(\d+)$')
         pmid = pattern.match(parse_result.path).group(1)
         return pmid
 
