@@ -1,6 +1,11 @@
 Revision History
 ================
 
+0.1.5 2016-01-08
+
+- Add exception for publications that do not have month information (Thanks to Sasha Cuerda!)
+
+
 0.1.4 2015-12-24
 
 - Resolve PEP8 errors
