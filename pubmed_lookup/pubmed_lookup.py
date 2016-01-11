@@ -201,7 +201,7 @@ class Publication(object):
             try:
                 self.month = datetime.datetime.strptime(
                     month_short, "%b").month
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError):
                 self.month = ''
 
         else:
