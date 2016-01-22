@@ -3,8 +3,7 @@ import os
 import unittest
 from io import StringIO
 
-import command_line
-from pubmed_lookup import Publication, PubMedLookup
+from pubmed_lookup import command_line, Publication, PubMedLookup
 
 
 class TestConsole(unittest.TestCase):
