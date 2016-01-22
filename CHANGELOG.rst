@@ -1,6 +1,11 @@
 Revision History
 ================
 
+0.2.1 2016-01-22
+
+- Change import of ``pubmed_lookup.command_line`` that was causing Travis CI to fail
+
+
 0.2.0 2016-01-22
 
 - Create command-line tool (``pubmed-citation``) to quickly retrieve citations for PubMed IDs/URLS
