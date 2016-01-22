@@ -47,4 +47,9 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
     ],
     install_requires=install_requires,
+    entry_points={
+        'console_scripts': [
+            'pubmed-citation=pubmed_lookup.command_line:pubmed_citation',
+        ],
+    },
 )
