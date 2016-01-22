@@ -47,56 +47,56 @@ Usage
 
 - Retrieve a PubMed record:
 
-.. code-block:: python
+  .. code-block:: python
 
-    from pubmed_lookup import PubMedLookup
+      from pubmed_lookup import PubMedLookup
 
-    # NCBI will contact user by email if excessive queries are detected
-    email = ''
-    url = 'http://www.ncbi.nlm.nih.gov/pubmed/22331878'
-    lookup = PubMedLookup(url, email)
+      # NCBI will contact user by email if excessive queries are detected
+      email = ''
+      url = 'http://www.ncbi.nlm.nih.gov/pubmed/22331878'
+      lookup = PubMedLookup(url, email)
 
 
 - Create a Publication object:
 
-.. code-block:: python
+  .. code-block:: python
 
-    from pubmed_lookup import Publication
+      from pubmed_lookup import Publication
     
-    publication = Publication(lookup)    # Use 'resolve_doi=False' to keep DOI URL
+      publication = Publication(lookup)    # Use 'resolve_doi=False' to keep DOI URL
 
 
 - Access the Publication object's attributes:
 
-.. code-block:: python
-
-    print(
-    """
-    TITLE:\n{title}\n
-    AUTHORS:\n{authors}\n
-    JOURNAL:\n{journal}\n
-    YEAR:\n{year}\n
-    MONTH:\n{month}\n
-    DAY:\n{day}\n
-    URL:\n{url}\n
-    PUBMED:\n{pubmed}\n
-    CITATION:\n{citation}\n
-    MINICITATION:\n{mini_citation}\n
-    ABSTRACT:\n{abstract}\n
-    """
-    .format(**{
-        'title': publication.title,
-        'authors': publication.authors,
-        'journal': publication.journal,
-        'year': publication.year,
-        'month': publication.month,
-        'day': publication.day,
-        'url': publication.url,
-        'pubmed': publication.pubmed_url,
-        'citation': publication.cite(),
-        'mini_citation': publication.cite_mini(),
-        'abstract': repr(publication.abstract),
-    }))
+  .. code-block:: python
+  
+      print(
+      """
+      TITLE:\n{title}\n
+      AUTHORS:\n{authors}\n
+      JOURNAL:\n{journal}\n
+      YEAR:\n{year}\n
+      MONTH:\n{month}\n
+      DAY:\n{day}\n
+      URL:\n{url}\n
+      PUBMED:\n{pubmed}\n
+      CITATION:\n{citation}\n
+      MINICITATION:\n{mini_citation}\n
+      ABSTRACT:\n{abstract}\n
+      """
+      .format(**{
+          'title': publication.title,
+          'authors': publication.authors,
+          'journal': publication.journal,
+          'year': publication.year,
+          'month': publication.month,
+          'day': publication.day,
+          'url': publication.url,
+          'pubmed': publication.pubmed_url,
+          'citation': publication.cite(),
+          'mini_citation': publication.cite_mini(),
+          'abstract': repr(publication.abstract),
+      }))
 
 
 - Output of example:
@@ -140,10 +140,10 @@ Command-Line Tool
 
 - Get a PubMed record's citation (both give same result):
 
-.. code-block:: sh
+  .. code-block:: sh
 
-    pubmed-citation 22331878
-    pubmed-citation http://www.ncbi.nlm.nih.gov/pubmed/22331878
+      pubmed-citation 22331878
+      pubmed-citation http://www.ncbi.nlm.nih.gov/pubmed/22331878
 
 
 - Output of example:
