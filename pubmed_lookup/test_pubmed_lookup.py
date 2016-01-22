@@ -1,8 +1,40 @@
 import copy
 import os
 import unittest
+from io import StringIO
 
+import command_line
 from pubmed_lookup import Publication, PubMedLookup
+
+
+class TestConsole(unittest.TestCase):
+    """Test command-line tools."""
+
+    def setUp(self):
+        self.citation = (
+            'Goodspeed D, Chehab EW, Min-Venditti A, Braam J, Covington MF '
+            '(2012). Arabidopsis synchronizes jasmonate-mediated defense with '
+            'insect circadian behavior. Proc Natl Acad Sci U S A 109(12): '
+            '4674-7.')
+        self.mini_citation = (
+            'Goodspeed D - Covington MF - 2012 - Proc Natl Acad Sci U S A')
+        self.out = StringIO()
+        self.pmid = '22331878'
+
+    def test_pubmed_citation(self):
+        command_line.pubmed_citation([self.pmid], out=self.out)
+        output = self.out.getvalue()
+        self.assertEqual(output, self.citation + '\n')
+
+    def test_pubmed_citation_m(self):
+        command_line.pubmed_citation(['-m', self.pmid], out=self.out)
+        output = self.out.getvalue()
+        self.assertEqual(output, self.mini_citation + '\n')
+
+    def test_pubmed_citation_mini(self):
+        command_line.pubmed_citation(['--mini', self.pmid], out=self.out)
+        output = self.out.getvalue()
+        self.assertEqual(output, self.mini_citation + '\n')
 
 
 class TestPublication(unittest.TestCase):

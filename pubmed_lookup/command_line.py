@@ -1,9 +1,10 @@
 import argparse
+import sys
 
 from pubmed_lookup import PubMedLookup, Publication
 
 
-def pubmed_citation():
+def pubmed_citation(args=sys.argv[1:], out=sys.stdout):
     """Get a citation via the command line using a PubMed ID or PubMed URL"""
 
     parser = argparse.ArgumentParser(
@@ -14,12 +15,12 @@ def pubmed_citation():
     parser.add_argument(
         '-e', '--email', action='store', help='set user email', default='')
 
-    args = parser.parse_args()
+    args = parser.parse_args(args=args)
 
     lookup = PubMedLookup(args.query, args.email)
     publication = Publication(lookup, resolve_doi=False)
 
     if args.mini:
-        print(publication.cite_mini())
+        out.write(publication.cite_mini() + '\n')
     else:
-        print(publication.cite())
+        out.write(publication.cite() + '\n')
