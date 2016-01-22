@@ -22,7 +22,7 @@ install_requires = [
 
 setup(
     name='pubmed-lookup',
-    version='0.1.5',
+    version='0.2.0',
     packages=['pubmed_lookup'],
     test_suite='pubmed_lookup.test_pubmed_lookup',
     include_package_data=True,
@@ -47,4 +47,10 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
     ],
     install_requires=install_requires,
+    entry_points={
+        'console_scripts': [
+            'pubmed-citation=pubmed_lookup.command_line:pubmed_citation',
+            'pubmed-url=pubmed_lookup.command_line:pubmed_url',
+        ],
+    },
 )

@@ -1,8 +1,59 @@
 import copy
 import os
 import unittest
+from io import StringIO
 
+import command_line
 from pubmed_lookup import Publication, PubMedLookup
+
+
+class TestConsole(unittest.TestCase):
+    """Test command-line tools."""
+
+    def setUp(self):
+        self.out = StringIO()
+        self.pmid = '22331878'
+
+        self.citation = (
+            'Goodspeed D, Chehab EW, Min-Venditti A, Braam J, Covington MF '
+            '(2012). Arabidopsis synchronizes jasmonate-mediated defense with '
+            'insect circadian behavior. Proc Natl Acad Sci U S A 109(12): '
+            '4674-7.')
+        self.mini_citation = (
+            'Goodspeed D - Covington MF - 2012 - Proc Natl Acad Sci U S A')
+
+        self.article_url = 'http://www.pnas.org/content/109/12/4674'
+        self.doi_url = 'http://dx.doi.org/10.1073/pnas.1116368109'
+
+    def test_pubmed_citation(self):
+        command_line.pubmed_citation([self.pmid], out=self.out)
+        output = self.out.getvalue()
+        self.assertEqual(output, self.citation + '\n')
+
+    def test_pubmed_citation_m(self):
+        command_line.pubmed_citation(['-m', self.pmid], out=self.out)
+        output = self.out.getvalue()
+        self.assertEqual(output, self.mini_citation + '\n')
+
+    def test_pubmed_citation_mini(self):
+        command_line.pubmed_citation(['--mini', self.pmid], out=self.out)
+        output = self.out.getvalue()
+        self.assertEqual(output, self.mini_citation + '\n')
+
+    def test_pubmed_url(self):
+        command_line.pubmed_url([self.pmid], out=self.out)
+        output = self.out.getvalue()
+        self.assertEqual(output, self.article_url + '\n')
+
+    def test_pubmed_url_d(self):
+        command_line.pubmed_url(['-d', self.pmid], out=self.out)
+        output = self.out.getvalue()
+        self.assertEqual(output, self.doi_url + '\n')
+
+    def test_pubmed_url_doi(self):
+        command_line.pubmed_url(['--doi', self.pmid], out=self.out)
+        output = self.out.getvalue()
+        self.assertEqual(output, self.doi_url + '\n')
 
 
 class TestPublication(unittest.TestCase):
@@ -11,8 +62,8 @@ class TestPublication(unittest.TestCase):
         # Get publication record
         email = ''
         cls.pmid = '22331878'
-        lookup = PubMedLookup(cls.pmid, email)
-        cls.master_record = Publication(lookup)
+        cls.lookup = PubMedLookup(cls.pmid, email)
+        cls.master_record = Publication(cls.lookup)
 
         # Set frequently used expected results
         cls.authors = 'Goodspeed D, Chehab EW, Min-Venditti A, Braam J, ' \
@@ -119,6 +170,10 @@ class TestPublication(unittest.TestCase):
         self.record.record.update({'DOI': 'not a valid DOI'})
         self.record.set_article_url()
         self.assertEqual(self.record.url, '')
+
+    def test_dont_resolve_doi(self):
+        record = Publication(self.lookup, resolve_doi=False)
+        self.assertEqual(record.url, 'http://dx.doi.org/10.1073/pnas.1116368109')
 
 
 class TestPubMedLookup(unittest.TestCase):
