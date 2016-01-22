@@ -1,6 +1,14 @@
 Revision History
 ================
 
+0.2.0 2016-01-22
+
+- Create command-line tool (``pubmed-citation``) to quickly retrieve citations for PubMed IDs/URLS
+- Create command-line tool (``pubmed-url``) to quickly retrieve article and DOI URLs for PubMed IDs/URLS
+- Add option to save time by not resolving DOI URL (``Publication(pubmed_record, resolve_doi=False)``)
+- Clean up documentation
+
+
 0.1.5 2016-01-08
 
 - Add exception for publications that do not have month information (Thanks to Sasha Cuerda!)
