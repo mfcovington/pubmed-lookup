@@ -11,8 +11,8 @@ class TestPublication(unittest.TestCase):
         # Get publication record
         email = ''
         cls.pmid = '22331878'
-        lookup = PubMedLookup(cls.pmid, email)
-        cls.master_record = Publication(lookup)
+        cls.lookup = PubMedLookup(cls.pmid, email)
+        cls.master_record = Publication(cls.lookup)
 
         # Set frequently used expected results
         cls.authors = 'Goodspeed D, Chehab EW, Min-Venditti A, Braam J, ' \
@@ -119,6 +119,10 @@ class TestPublication(unittest.TestCase):
         self.record.record.update({'DOI': 'not a valid DOI'})
         self.record.set_article_url()
         self.assertEqual(self.record.url, '')
+
+    def test_dont_resolve_doi(self):
+        record = Publication(self.lookup, resolve_doi=False)
+        self.assertEqual(record.url, 'http://dx.doi.org/10.1073/pnas.1116368109')
 
 
 class TestPubMedLookup(unittest.TestCase):

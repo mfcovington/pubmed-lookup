@@ -63,7 +63,7 @@ Usage
 
     from pubmed_lookup import Publication
     
-    publication = Publication(lookup)
+    publication = Publication(lookup)    # Use 'resolve_doi=False' to keep DOI URL
 
 
 - Access the Publication object's attributes:

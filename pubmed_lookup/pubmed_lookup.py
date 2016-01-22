@@ -15,11 +15,16 @@ class Publication(object):
     a scientific publication.
     """
 
-    def __init__(self, pubmed_record):
+    def __init__(self, pubmed_record, resolve_doi=True):
         """
         Upon init: set Publication attributes (record, pmid, pubmed_url,
         title, authors, first_author, last_author, journal, volume, issue,
-        pages, url, abstract, year, month, and day)
+        pages, url, abstract, year, month, and day).
+
+        By default, the DOI gets resolved into the article's actual URL.
+        To return the DOI URL instead of the article's URL, use:
+
+            publication = Publication(pubmed_record, resolve_doi=False)
         """
         self.record = pubmed_record.record
         self.pmid = self.record.get('Id')
@@ -34,7 +39,7 @@ class Publication(object):
         self.volume = self.record.get('Volume')
         self.issue = self.record.get('Issue')
         self.pages = self.record.get('Pages')
-        self.set_article_url()
+        self.set_article_url(resolve_doi=resolve_doi)
 
         xml_dict = self.get_pubmed_xml()
         self.set_abstract(xml_dict)
@@ -169,19 +174,23 @@ class Publication(object):
         else:
             self.abstract = ''
 
-    def set_article_url(self):
+    def set_article_url(self, resolve_doi=True):
         """
         If record has a DOI, set article URL based on where the DOI points.
         """
         if 'DOI' in self.record:
             doi_url = "/".join(['http://dx.doi.org', self.record['DOI']])
 
-            try:
-                response = urlopen(doi_url)
-            except URLError:
-                self.url = ''
+            if resolve_doi:
+                try:
+                    response = urlopen(doi_url)
+                except URLError:
+                    self.url = ''
+                else:
+                    self.url = response.geturl()
             else:
-                self.url = response.geturl()
+                self.url = doi_url
+
         else:
             self.url = ''
 
