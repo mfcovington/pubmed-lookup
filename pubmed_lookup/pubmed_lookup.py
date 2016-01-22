@@ -167,7 +167,7 @@ class Publication(object):
 
     def set_abstract(self, xml_dict):
         """
-        If record has an abstract, get it extract it from PubMed's XML data
+        If record has an abstract, extract it from PubMed's XML data
         """
         if self.record.get('HasAbstract') == 1 and xml_dict:
             self.abstract = self.parse_abstract(xml_dict)
