@@ -11,6 +11,9 @@ class TestConsole(unittest.TestCase):
     """Test command-line tools."""
 
     def setUp(self):
+        self.out = StringIO()
+        self.pmid = '22331878'
+
         self.citation = (
             'Goodspeed D, Chehab EW, Min-Venditti A, Braam J, Covington MF '
             '(2012). Arabidopsis synchronizes jasmonate-mediated defense with '
@@ -18,8 +21,9 @@ class TestConsole(unittest.TestCase):
             '4674-7.')
         self.mini_citation = (
             'Goodspeed D - Covington MF - 2012 - Proc Natl Acad Sci U S A')
-        self.out = StringIO()
-        self.pmid = '22331878'
+
+        self.article_url = 'http://www.pnas.org/content/109/12/4674'
+        self.doi_url = 'http://dx.doi.org/10.1073/pnas.1116368109'
 
     def test_pubmed_citation(self):
         command_line.pubmed_citation([self.pmid], out=self.out)
@@ -35,6 +39,21 @@ class TestConsole(unittest.TestCase):
         command_line.pubmed_citation(['--mini', self.pmid], out=self.out)
         output = self.out.getvalue()
         self.assertEqual(output, self.mini_citation + '\n')
+
+    def test_pubmed_url(self):
+        command_line.pubmed_url([self.pmid], out=self.out)
+        output = self.out.getvalue()
+        self.assertEqual(output, self.article_url + '\n')
+
+    def test_pubmed_url_d(self):
+        command_line.pubmed_url(['-d', self.pmid], out=self.out)
+        output = self.out.getvalue()
+        self.assertEqual(output, self.doi_url + '\n')
+
+    def test_pubmed_url_doi(self):
+        command_line.pubmed_url(['--doi', self.pmid], out=self.out)
+        output = self.out.getvalue()
+        self.assertEqual(output, self.doi_url + '\n')
 
 
 class TestPublication(unittest.TestCase):

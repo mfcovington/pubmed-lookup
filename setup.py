@@ -50,6 +50,7 @@ setup(
     entry_points={
         'console_scripts': [
             'pubmed-citation=pubmed_lookup.command_line:pubmed_citation',
+            'pubmed-url=pubmed_lookup.command_line:pubmed_url',
         ],
     },
 )
