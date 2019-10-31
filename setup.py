@@ -22,7 +22,7 @@ install_requires = [
 
 setup(
     name='pubmed-lookup',
-    version='0.2.1',
+    version='0.2.2',
     packages=['pubmed_lookup'],
     test_suite='pubmed_lookup.test_pubmed_lookup',
     include_package_data=True,
@@ -44,6 +44,9 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3 :: Only',
     ],
     install_requires=install_requires,

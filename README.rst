@@ -15,9 +15,16 @@ pubmed-lookup
     :target: https://coveralls.io/github/mfcovington/pubmed-lookup?branch=master
     :alt: Test Coverage
 
-.. image:: https://landscape.io/github/mfcovington/pubmed-lookup/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/mfcovington/pubmed-lookup/master
-   :alt: Code Health
+.. image:: https://img.shields.io/pypi/dm/pubmed-lookup.svg
+   :target: https://pypi.python.org/pypi/pubmed-lookup#downloads
+   :alt: Monthly PyPI Downloads
+
+.. image:: https://img.shields.io/pypi/pyversions/pubmed-lookup.svg
+   :alt: Compatible Python Versions
+
+.. image:: https://img.shields.io/pypi/l/pubmed-lookup.svg
+   :alt: License
+
 
 ``pubmed-lookup`` is a Python package to lookup PubMed records and make Publication objects with info about a scientific publication.
 
@@ -178,4 +185,4 @@ pubmed-url
     http://dx.doi.org/10.1073/pnas.1116368109
 
 
-*Version 0.2.1*
+*Version 0.2.2*
