@@ -189,7 +189,7 @@ class Publication(object):
             if resolve_doi:
                 try:
                     response = urlopen(doi_url)
-                except URLError:
+                except (ConnectionResetError, URLError):
                     self.url = doi_url
                 else:
                     self.url = response.geturl()
