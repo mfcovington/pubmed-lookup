@@ -1,6 +1,15 @@
 Revision History
 ================
 
+0.2.2 2019-10-31
+
+- Accommodate publications with no authors
+- Retain DOI URL when resolving throws URLError
+- Catch connection reset errors when resolving DOI URLs
+- Indicate compatibility with recent versions of Python 3 (through 3.7)
+- Update README badges
+
+
 0.2.1 2016-01-22
 
 - Change import of ``pubmed_lookup.command_line`` that was causing Travis CI to fail
