@@ -32,9 +32,14 @@ class Publication(object):
                           .format(self.pmid)
         self.title = self.record.get('Title')
         self._author_list = self.record.get('AuthorList')
-        self.authors = ", ".join(self._author_list)
-        self.first_author = self._author_list[0]
-        self.last_author = self._author_list[-1]
+        if self._author_list:
+            self.authors = ', '.join(self._author_list)
+            self.first_author = self._author_list[0]
+            self.last_author = self._author_list[-1]
+        else:
+            self.authors = ''
+            self.first_author = ''
+            self.last_author = ''
         self.journal = self.record.get('Source')
         self.volume = self.record.get('Volume')
         self.issue = self.record.get('Issue')
