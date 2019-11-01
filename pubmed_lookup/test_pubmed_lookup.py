@@ -6,53 +6,51 @@ from io import StringIO
 from pubmed_lookup import command_line, Publication, PubMedLookup
 
 
+article_url = 'https://www.pnas.org/content/109/12/4674'
+citation = (
+    'Goodspeed D, Chehab EW, Min-Venditti A, Braam J, Covington MF (2012). '
+    'Arabidopsis synchronizes jasmonate-mediated defense with insect '
+    'circadian behavior. Proc Natl Acad Sci U S A 109(12): 4674-7.')
+doi_url = 'http://dx.doi.org/10.1073/pnas.1116368109'
+mini_citation = 'Goodspeed D - Covington MF - 2012 - Proc Natl Acad Sci U S A'
+pmid = '22331878'
+
+
 class TestConsole(unittest.TestCase):
     """Test command-line tools."""
 
     def setUp(self):
         self.out = StringIO()
-        self.pmid = '22331878'
-
-        self.citation = (
-            'Goodspeed D, Chehab EW, Min-Venditti A, Braam J, Covington MF '
-            '(2012). Arabidopsis synchronizes jasmonate-mediated defense with '
-            'insect circadian behavior. Proc Natl Acad Sci U S A 109(12): '
-            '4674-7.')
-        self.mini_citation = (
-            'Goodspeed D - Covington MF - 2012 - Proc Natl Acad Sci U S A')
-
-        self.article_url = 'http://www.pnas.org/content/109/12/4674'
-        self.doi_url = 'http://dx.doi.org/10.1073/pnas.1116368109'
 
     def test_pubmed_citation(self):
-        command_line.pubmed_citation([self.pmid], out=self.out)
+        command_line.pubmed_citation([pmid], out=self.out)
         output = self.out.getvalue()
-        self.assertEqual(output, self.citation + '\n')
+        self.assertEqual(output, citation + '\n')
 
     def test_pubmed_citation_m(self):
-        command_line.pubmed_citation(['-m', self.pmid], out=self.out)
+        command_line.pubmed_citation(['-m', pmid], out=self.out)
         output = self.out.getvalue()
-        self.assertEqual(output, self.mini_citation + '\n')
+        self.assertEqual(output, mini_citation + '\n')
 
     def test_pubmed_citation_mini(self):
-        command_line.pubmed_citation(['--mini', self.pmid], out=self.out)
+        command_line.pubmed_citation(['--mini', pmid], out=self.out)
         output = self.out.getvalue()
-        self.assertEqual(output, self.mini_citation + '\n')
+        self.assertEqual(output, mini_citation + '\n')
 
     def test_pubmed_url(self):
-        command_line.pubmed_url([self.pmid], out=self.out)
+        command_line.pubmed_url([pmid], out=self.out)
         output = self.out.getvalue()
-        self.assertEqual(output, self.article_url + '\n')
+        self.assertEqual(output, article_url + '\n')
 
     def test_pubmed_url_d(self):
-        command_line.pubmed_url(['-d', self.pmid], out=self.out)
+        command_line.pubmed_url(['-d', pmid], out=self.out)
         output = self.out.getvalue()
-        self.assertEqual(output, self.doi_url + '\n')
+        self.assertEqual(output, doi_url + '\n')
 
     def test_pubmed_url_doi(self):
-        command_line.pubmed_url(['--doi', self.pmid], out=self.out)
+        command_line.pubmed_url(['--doi', pmid], out=self.out)
         output = self.out.getvalue()
-        self.assertEqual(output, self.doi_url + '\n')
+        self.assertEqual(output, doi_url + '\n')
 
 
 class TestPublication(unittest.TestCase):
@@ -60,7 +58,7 @@ class TestPublication(unittest.TestCase):
     def setUpClass(cls):
         # Get publication record
         email = ''
-        cls.pmid = '22331878'
+        cls.pmid = pmid
         cls.lookup = PubMedLookup(cls.pmid, email)
         cls.master_record = Publication(cls.lookup)
 
@@ -93,7 +91,7 @@ class TestPublication(unittest.TestCase):
         self.assertEqual(self.record.pmid, self.pmid)
         self.assertEqual(
             self.record.pubmed_url,
-            'http://www.ncbi.nlm.nih.gov/pubmed/22331878')
+            'http://www.ncbi.nlm.nih.gov/pubmed/{}'.format(pmid))
         self.assertEqual(self.record.title, self.title)
         self.assertEqual(self.record.authors, self.authors)
         self.assertEqual(self.record.first_author, 'Goodspeed D')
@@ -116,9 +114,7 @@ class TestPublication(unittest.TestCase):
             self.record.authors_et_al(max_authors=10), self.authors)
 
     def test_cite_mini(self):
-        self.assertEqual(
-            self.record.cite_mini(),
-            'Goodspeed D - Covington MF - 2012 - Proc Natl Acad Sci U S A')
+        self.assertEqual(self.record.cite_mini(), mini_citation)
 
     def test_cite(self):
         self.assertEqual(
@@ -158,7 +154,7 @@ class TestPublication(unittest.TestCase):
         "Skipping this test on Travis CI.")
     def test_doi(self):
         self.assertEqual(
-            self.record.url, 'http://www.pnas.org/content/109/12/4674')
+            self.record.url, 'https://www.pnas.org/content/109/12/4674')
 
     def test_missing_doi(self):
         del self.record.record['DOI']
@@ -168,18 +164,19 @@ class TestPublication(unittest.TestCase):
     def test_invalid_doi(self):
         self.record.record.update({'DOI': 'not a valid DOI'})
         self.record.set_article_url()
-        self.assertEqual(self.record.url, '')
+        self.assertEqual(self.record.url, 'http://dx.doi.org/not a valid DOI')
 
     def test_dont_resolve_doi(self):
         record = Publication(self.lookup, resolve_doi=False)
-        self.assertEqual(record.url, 'http://dx.doi.org/10.1073/pnas.1116368109')
+        self.assertEqual(
+            record.url, doi_url)
 
 
 class TestPubMedLookup(unittest.TestCase):
     def setUp(self):
         self.email = ''
-        self.pubmed_url = 'http://www.ncbi.nlm.nih.gov/pubmed/22331878'
-        self.pmid = '22331878'
+        self.pubmed_url = 'http://www.ncbi.nlm.nih.gov/pubmed/{}'.format(pmid)
+        self.pmid = pmid
 
     def test_pmid_and_url_return_same_record(self):
         self.assertEqual(
