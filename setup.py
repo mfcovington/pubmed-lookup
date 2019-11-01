@@ -16,7 +16,7 @@ def read(*paths):
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 install_requires = [
-    "biopython>=1.65",
+    "biopython>=1.66",
     "xmltodict>=0.9.2",
 ]
 
