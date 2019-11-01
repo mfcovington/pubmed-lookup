@@ -3,7 +3,7 @@ import sys
 from setuptools import setup
 
 if sys.version_info < (3, 3):
-    print("Sorry, djangocms-lab-publications currently requires Python 3.3+.")
+    print("Sorry, pubmed-lookup currently requires Python 3.3+.")
     sys.exit(1)
 
 # From: https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/
@@ -16,13 +16,13 @@ def read(*paths):
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 install_requires = [
-    "biopython>=1.65",
+    "biopython>=1.66",
     "xmltodict>=0.9.2",
 ]
 
 setup(
     name='pubmed-lookup',
-    version='0.2.2',
+    version='0.2.3',
     packages=['pubmed_lookup'],
     test_suite='pubmed_lookup.test_pubmed_lookup',
     include_package_data=True,
