@@ -1,6 +1,13 @@
 Revision History
 ================
 
+0.2.3 2019-10-31
+
+- Refactor tests
+- Test are requiring biopython>=1.66 to run/pass
+- Fix error message for Python (3.3+) version check
+
+
 0.2.2 2019-10-31
 
 - Accommodate publications with no authors
