@@ -184,7 +184,7 @@ class Publication(object):
         If record has a DOI, set article URL based on where the DOI points.
         """
         if 'DOI' in self.record:
-            doi_url = "/".join(['http://dx.doi.org', self.record['DOI']])
+            doi_url = "/".join(['http://dx.doi.org', ''.join(self.record['DOI'].split())])
 
             if resolve_doi:
                 try:
