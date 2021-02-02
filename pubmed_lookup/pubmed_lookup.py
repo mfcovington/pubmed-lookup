@@ -230,12 +230,13 @@ class PubMedLookup(object):
     (e.g., '22331878' or 'http://www.ncbi.nlm.nih.gov/pubmed/22331878')
     """
 
-    def __init__(self, query, user_email):
+    def __init__(self, query, user_email, **kwargs):
         """
         Upon init: set email as required by API, determine whether query
         is PubMed ID or PubMed URL and retrieve PubMed record accordingly.
         """
         Entrez.email = user_email
+        Entrez.__dict__.update(kwargs)
 
         pmid_pattern = r'^\d+$'
         pmurl_pattern = r'^https?://www\.ncbi\.nlm\.nih\.gov/pubmed/\d+$'
