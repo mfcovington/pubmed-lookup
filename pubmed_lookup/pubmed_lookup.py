@@ -157,7 +157,7 @@ class Publication(object):
         Use a PubMed ID to retrieve PubMed metadata in XML form.
         """
         url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/' \
-              'efetch.fcgi?db=pubmed&rettype=abstract&id={}' \
+              'efetch.fcgi?db=pubmed&rettype=abstract&retmode=xml&id={}' \
               .format(self.pmid)
 
         try:
